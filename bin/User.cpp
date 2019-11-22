@@ -55,10 +55,28 @@
 
     //Constructor:
     LengthRecommenderUser::LengthRecommenderUser(const std::string &name):User(name){}
-    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other) {}
+    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {}
 
+    LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User::User(other), avgTime(other.avgTime)//Move constructor
+    {
+    //TODO: do we need to clear the pointer of the vector?
+    }
+    LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other){}//copy assignment operator
+    LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other){}//Move assingment operator
 
-Watchable* LengthRecommenderUser::getRecommendation(Session &s) {}//TODO:: implements by the algorithm
+    double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
+    {
+        double avg=0;
+        for(int i=0;i<history.size();i++){
+            avg=avg+history.at(i)->get_length();
+        }
+        this->avgTime=(avg/history.size());
+    }
+    void LengthRecommenderUser::set_remaning_watchable(std::vector<Watchable *> remaning_watchable)
+    {
+        this->remaning_watchable=remaning_watchable;
+    }
+    Watchable* LengthRecommenderUser::getRecommendation(Session &s) {}//TODO:: implements by the algorithm
 //endregion
 
 //region User - Rerun Recommender

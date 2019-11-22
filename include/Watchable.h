@@ -15,6 +15,8 @@ public:
     virtual std::string toString() const = 0;
     virtual Watchable* getNextWatchable(Session&) const = 0;
     virtual Watchable* clone()=0;
+    const long get_id();
+    const int get_length();
 private:
     const long id;
     int length;

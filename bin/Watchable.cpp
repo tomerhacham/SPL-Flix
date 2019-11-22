@@ -17,7 +17,9 @@ using namespace std;
     Watchable* Watchable::getNextWatchable(Session &) const {
         //TODO: implement Delete on the name string
     }
-    Watchable* Watchable::clone() {}
+
+    const long Watchable::get_id() {return this->id;}
+    const int Watchable::get_length() {return this->length;}
 //endregion
 
 //region Movie

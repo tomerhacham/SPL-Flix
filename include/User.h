@@ -34,8 +34,17 @@ public:
     LengthRecommenderUser(const std::string &name);
     LengthRecommenderUser(const LengthRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
+    LengthRecommenderUser(LengthRecommenderUser&& other);//Move constructor
+    LengthRecommenderUser& operator=(const LengthRecommenderUser& other); //copy assignment operator
+    LengthRecommenderUser& operator=(LengthRecommenderUser&& other); //move assign operator
+
+protected:
+    double calculate_avg_time();
+    void set_remaning_watchable(std::vector<Watchable*> remaning_watchable);
+
 private:
     double avgTime;
+    std::vector<Watchable*> remaning_watchable;
 };
 
 class RerunRecommenderUser : public User {
