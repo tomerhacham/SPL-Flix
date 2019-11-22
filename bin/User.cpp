@@ -4,8 +4,20 @@
 
     //Constructors
     User::User(const std::string &name): name(name) {}
-    User::User(const User& other): name(other.name) ,history(other.history){}
-    User::~User() {}
+    User::User(const User& other): name(other.name)
+    {
+        for(int i=0;i<other.history.size();i++){
+            this->history.push_back(other.history[i]);
+        }
+
+    }
+    User::~User()
+    {
+        for(int i=0;i<history.size();i++){
+           delete  history[i];
+        }
+
+    }
 
     //Methods
     std::vector<Watchable*> User::get_history() const
@@ -46,3 +58,4 @@
 
     //Methods
     Watchable* GenreRecommenderUser::getRecommendation(Session &s) {}//TODO: we needs to impelemnt some king of data structure to store the number of the stuff the the user watch per tag
+//endregion

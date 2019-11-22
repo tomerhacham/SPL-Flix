@@ -12,24 +12,27 @@ using namespace std;
             tags.push_back(other.tags[i]);
         }
     }
-
     //Methods:
     std::string Watchable::toString() const {}
-    Watchable* Watchable::getNextWatchable(Session &) const {}
+    Watchable* Watchable::getNextWatchable(Session &) const {
+        //TODO: implement Delete on the name string
+    }
+    Watchable* Watchable::clone() {}
 //endregion
 
 //region Movie
 
-    //Constructors:
+    //Constructors
     Movie::Movie(long id, const std::string &name, int length, const std::vector<std::string> &tags): Watchable(id,length,tags), name(name) {}
     Movie::Movie(const Movie &other):Watchable(other), name(other.name) {}
-    Movie::~Movie()
-    {
-        //TODO: implement Delete on the name string
-    }
+    Movie::~Movie() {}
 
     //Methods:
-    std::string Movie::toString(bool print_full) const {}
+    Movie* Movie::clone()
+    {
+        return new Movie(*this);
+    }
+    std::string Movie::toString() const {}
     Watchable* Movie::getNextWatchable(Session &) const {}
 
 //endregion
@@ -51,7 +54,8 @@ using namespace std;
     }
 
     //Methods:
-    std::string Episode::toString(bool print_full) const {}//TODO:implement
+
+    std::string Episode::toString() const {}//TODO:implement
     Watchable* Episode::getNextWatchable(Session &) const {}//TODO:implement
 
 //endregion
