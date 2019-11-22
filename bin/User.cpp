@@ -1,44 +1,65 @@
-#include "../include/User.h"endregin
+#include <include/Watchable.h>
+#include "../include/User.h"
 
 //region User abstract
 
     //Constructors
-    User::User(const std::string &name): name(name) {}
-    User::User(const User& other): name(other.name)
+    User::User(const std::string &name): name(name) {}//parameter constructor
+    User::User(const User& other): name(other.name)//copy constructor
     {
         for(int i=0;i<other.history.size();i++){
-            this->history.push_back(other.history[i]);
+            Watchable* watch = other.history.at(i);
+            this->history.push_back(watch->clone());
         }
 
     }
-    User::~User()
+    User& User::operator=(const User &other) //copy assignment operator
     {
-        for(int i=0;i<history.size();i++){
-           delete  history[i];
+        if(this!=&other){
+            for(int i=0;i<history.size();i++){
+                Watchable* watch = history.at(i);
+                delete watch;
+                this->history.at(i)=other.history.at(i)->clone();
+            }
         }
-
+        return *this;
     }
-
-    //Methods
-    std::vector<Watchable*> User::get_history() const
+    User& User::operator=(User && other)//move assignment operator
     {
-        return this->history;
+        if(this!=&other){
+            for(int i=0;i<history.size();i++) {
+                Watchable *watch = history.at(i);
+                delete watch;
+            }
+            this->history=other.history;
+            //TODO: how to change the pointer of the other's vector that it will not delete mine
+
+        }
     }
-    std::string User::getName() const
+    User::~User()//destructor
     {
-        return this->name;
+    for(int i=0;i<history.size();i++){
+        Watchable* watch = this->history.at(i);
+        delete watch;
+     }
+    history.clear();
     }
-    //endregion
+
+    //Methods:
+    std::string User::getName() const {return this->name;}
+    std::vector<Watchable*> User::get_history() const {return this->history;}
+
+//endregion
 
 //region User - Length Recommender
 
-    //Constructors
-    LengthRecommenderUser::LengthRecommenderUser(const std::string &name): User(name) {}
-    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser& other): User(other), avgTime(other.avgTime){}
+    //Constructor:
+    LengthRecommenderUser::LengthRecommenderUser(const std::string &name):User(name){}
+    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other) {}
 
-    //Methods
-    Watchable* LengthRecommenderUser::getRecommendation(Session &s) {}//TODO:: implements by the algorithm
-    //endregion
+
+Watchable* LengthRecommenderUser::getRecommendation(Session &s) {}//TODO:: implements by the algorithm
+//endregion
 
 //region User - Rerun Recommender
 

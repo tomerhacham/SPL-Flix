@@ -10,9 +10,13 @@ class Session;
 
 class User{
 public:
-    User(const std::string& name);
-    User(const User& other);
-    virtual ~User();
+    User(const std::string& name); //parameter constractor
+    User(const User& other);//copy constructor
+    User(User&& other);//Move constructor
+    User& operator=(const User& other); //copy assignment operator
+    User& operator=(User&& other); //move assign operator
+
+    virtual ~User();//destructor
     virtual Watchable* getRecommendation(Session& s) = 0;
 
     std::string getName() const;

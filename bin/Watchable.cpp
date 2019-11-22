@@ -54,7 +54,10 @@ using namespace std;
     }
 
     //Methods:
-
+    Episode* Episode::clone()
+    {
+        return new Episode(*this);
+    }
     std::string Episode::toString() const {}//TODO:implement
     Watchable* Episode::getNextWatchable(Session &) const {}//TODO:implement
 
