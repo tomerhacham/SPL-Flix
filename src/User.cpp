@@ -76,7 +76,15 @@
     {
         this->remaning_watchable=remaning_watchable;
     }
-    Watchable* LengthRecommenderUser::getRecommendation(Session &s) {}//TODO:: implements by the algorithm
+    Watchable* LengthRecommenderUser::getRecommendation(Session &s) //TODO:: implements by the algorithm
+    {
+        Session* session = &s;
+        std::vector<Watchable*> remaning_content ;
+        std::vector<Watchable*> all_content=session.get_content();
+        for(int i=0;i<session.all_content;i++){
+            if()
+        }
+    }
 //endregion
 
 //region User - Rerun Recommender

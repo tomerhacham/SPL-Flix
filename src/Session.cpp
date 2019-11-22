@@ -15,3 +15,5 @@
 
 //Methods:
     void Session::start() {}
+
+    //TODO: need to make a getter for the content vector
