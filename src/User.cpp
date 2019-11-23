@@ -35,9 +35,8 @@ using namespace std;
                 delete watch;
             }
             this->history=other.history;
-            //TODO: how to change the pointer of the other's vector that it will not delete mine
-
         }
+        return *this;
     }
     User::~User()//destructor
     {
@@ -59,7 +58,6 @@ using namespace std;
     //Constructor:
     LengthRecommenderUser::LengthRecommenderUser(const std::string &name):User(name){}
     LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {}
-
     LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User::User(other), avgTime(other.avgTime)//Move constructor
     {
     //TODO: do we need to clear the pointer of the vector?
@@ -111,17 +109,21 @@ using namespace std;
         }
         return nextContent;
     }
+
+LengthRecommenderUser *LengthRecommenderUser::clone() {
+    return new LengthRecommenderUser(&this);
+}
 //endregion
 
 //region User - Rerun Recommender
 
     //Constructor
-    RerunRecommenderUser::RerunRecommenderUser(const std::string &name): User(name), index(0){}
+    RerunRecommenderUser::RerunRecommenderUser(const string &name): User(name), index(0){}
     RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser& other): User(other), index(other.index) {}
 
     //Methods
-    std::ostream& operator << (std::ostream& os, const RerunRecommenderUser &user) {
-        return (os << user.getName() << "\n Recommendation algo: rer "<< std::endl);
+    ostream& operator << (ostream& os, const RerunRecommenderUser &user) {
+        return (os << user.getName() << "\n Recommendation algo: rer "<< endl);
     }
     Watchable* RerunRecommenderUser::getRecommendation(Session &s)
     {
@@ -133,23 +135,34 @@ using namespace std;
         }
         return nextContent;
     }
+
+RerunRecommenderUser *RerunRecommenderUser::clone() {
+    return new RerunRecommenderUser(&this);
+}
 //endregion
 
 //region User - Similar Genre
 
     // Constructors
     GenreRecommenderUser::GenreRecommenderUser(const std::string &name): User(name){}
-    GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser& other): User(other){}
+    GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser& other): User(other)
+    {
+        for(auto elem : other.tags_freq)
+            this->tags_freq.insert(elem.first,elem.second);
+
+        for(auto elem: other.remaning_watchable)
+            this->remaning_watchable.push_back(elem->clone())
+    }
 
     //Methods:
-    std::ostream& operator << (std::ostream& os, const RerunRecommenderUser &user) {
+    ostream& operator << (ostream& os, const RerunRecommenderUser &user) {
         return (os << user.getName() << "\n Recommendation algo: gen "<< std::endl);
     }
-    void GenreRecommenderUser::add_tag_freq(const std::string &tag)
+    void GenreRecommenderUser::add_tag_freq(const string &tag)
     {
         this->tags_freq[tag]++
     }
-    void GenreRecommenderUser::set_remaning_watchable(std::vector<Watchable *> all_content)
+    void GenreRecommenderUser::set_remaning_watchable(vector<Watchable *> all_content)
     {
         std::vector<Watchable*> remaning_content ;
         for(int i=0;i<all_content.size();i++) {
@@ -165,7 +178,7 @@ using namespace std;
     Watchable* GenreRecommenderUser::getRecommendation(Session &s) //TODO: we needs to impelemnt some king of data structure to store the number of the stuff the the user watch per tag
     {
         int freq=0;
-        std::string most_popular_tag;
+        string most_popular_tag;
         Watchable* nextContent=nullptr;
 
         //finding the most popular tags among the hash map elements
@@ -174,7 +187,7 @@ using namespace std;
             cout << "(" << iter->first << ", " << iter->second << ")\n";
             if(iter->second >=freq){
                 if(iter->second==freq){
-                    most_popular_tag=std::max(most_popular_tag,iter->first);
+                    most_popular_tag=max(most_popular_tag,iter->first);
                 }
                 if(iter->second>freq){
                     freq=iter->second;
@@ -185,8 +198,8 @@ using namespace std;
         //find the first watchable at remaining content which contains the most popular tag
         for(int i=0;nextContent== nullptr && i<remaning_watchable.size();i++){
 
-            std::vector<srting> watchable_tags = remaning_watchable.at(i).get_tags();
-            if(std::find(watchable_tags.begin(), watchable_tags.end(), most_popular_tag) != watchable_tags.end()) {
+            vector<srting> watchable_tags = remaning_watchable.at(i).get_tags();
+            if(find(watchable_tags.begin(), watchable_tags.end(), most_popular_tag) != watchable_tags.end()) {
                 /* watchable_tags contains most_popular_tag */
                 nextContent=remaning_watchable.at(i)
             } else {
@@ -195,4 +208,9 @@ using namespace std;
         }
         return nextContent;
     }
+
+GenreRecommenderUser *GenreRecommenderUser::clone() {
+    return new GenreRecommenderUser(&this);
+
+}
 //endregion

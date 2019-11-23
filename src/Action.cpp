@@ -2,6 +2,7 @@
 #include <vector>
 #include <include/User.h>
 #include <sstream>
+#include <include/Session.h>
 #include "include/Action.h"
 using namespace std;
 
@@ -39,7 +40,7 @@ using namespace std;
     //Methods:
     void CreateUser::act(Session &sess) {
         Session &session = sess;
-        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string>& parameters = session.get_parameters(); //TODO:implement get_param method
         string username = parameters.at(0);
         string algorithm = parameters.at(1);
         if(is_valid_algorithm(algorithm)){
@@ -131,8 +132,8 @@ using namespace std;
             this->error("Duplicate user with the same Username");
         }
         else if(user!= nullptr){
-            CreateUser newAct = CreateUser();
-            newAct.act(sess,new_username,)
+            User* duplicate_user =user->clone();
+            session.addUser(duplicate_user);
             this->complete();
         }
     }
