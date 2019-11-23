@@ -13,11 +13,7 @@ using namespace std;
         }
     }
     //Methods:
-    std::string Watchable::toString() const {}
-    Watchable* Watchable::getNextWatchable(Session &) const {
-        //TODO: implement Delete on the name string
-    }
-
+    const std::vector<std::string> Watchable::get_tags() {return this->tags;}
     const long Watchable::get_id() {return this->id;}
     const int Watchable::get_length() {return this->length;}
 //endregion
@@ -34,6 +30,7 @@ using namespace std;
     {
         return new Movie(*this);
     }
+    std::string Movie::get_name() {return this->name;}
     std::string Movie::toString() const {}
     Watchable* Movie::getNextWatchable(Session &) const {}
 
@@ -62,6 +59,11 @@ using namespace std;
     }
     std::string Episode::toString() const {}//TODO:implement
     Watchable* Episode::getNextWatchable(Session &) const {}//TODO:implement
+    const std::string Episode::get_seriesName() {return this->seriesName;}
+    int Episode::get_episode() {return this->episode;}
+    int Episode::get_season() {return this->season;}
+    long Episode::get_next_EpisodeId() { return this->nextEpisodeId;};
+
 
 //endregion
 

@@ -61,8 +61,11 @@ public:
     GenreRecommenderUser(const std::string& name);
     GenreRecommenderUser(const GenreRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
+    void add_tag_freq(const std::string& tag);
+    void set_remaning_watchable(std::vector<Watchable*> remaning_watchable);
 private:
-    //TODO: add some kind of data structure to count how many of the tags has the user watched
+    std::unordered_map<std::string, int>  tags_freq; //TODO: add some kind of data structure to count how many of the tags has the user watched
+    std::vector<Watchable*> remaning_watchable;
 };
 
 #endif
