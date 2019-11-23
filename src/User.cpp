@@ -2,11 +2,12 @@
 #include "include/User.h"
 #include <cmath>        // std::abs
 #include <algorithm>    // std::max
+using namespace std;
 
 //region User abstract
 
     //Constructors
-    User::User(const std::string &name): name(name) {}//parameter constructor
+    User::User(const string &name): name(name) {}//parameter constructor
     User::User(const User& other): name(other.name)//copy constructor
     {
         for(int i=0;i<other.history.size();i++){

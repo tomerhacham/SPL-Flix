@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+using namespace std;
 
 class Session;
 
@@ -17,19 +18,25 @@ public:
 	ActionStatus getStatus() const;
 	virtual void act(Session& sess)=0;
 	virtual std::string toString() const=0;
-protected:
-	void complete();
-	void error(const std::string& errorMsg);
-	std::string getErrorMsg() const;
+    virtual ~BaseAction();
+    void complete();
+    void error(const string& errorMsg);
+    string getErrorMsg() const;
+    void set_ErrorMsg(string ErrorMsg);
+    void set_status(ActionStatus status);
+
 private:
-	std::string errorMsg;
+	string errorMsg;
 	ActionStatus status;
 };
 
 class CreateUser  : public BaseAction {
 public:
-	virtual void act(Session& sess);
-	virtual std::string toString() const;
+    virtual ~CreateUser();
+    bool is_valid_algorithm(string parameter);
+    virtual void act(Session& sess);
+	virtual string toString() const;
+
 };
 
 class ChangeActiveUser : public BaseAction {
