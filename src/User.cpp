@@ -66,6 +66,11 @@
     LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other){}//copy assignment operator
     LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other){}//Move assingment operator
 
+    //Methods:
+    std::ostream& operator << (std::ostream& os, const LengthRecommenderUser &user) {
+        return (os << user.getName() << "\n Recommendation algo: len "<< std::endl);
+    }
+
     double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
     {
         double avg=0;
@@ -114,6 +119,9 @@
     RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser& other): User(other), index(other.index) {}
 
     //Methods
+    std::ostream& operator << (std::ostream& os, const RerunRecommenderUser &user) {
+        return (os << user.getName() << "\n Recommendation algo: rer "<< std::endl);
+    }
     Watchable* RerunRecommenderUser::getRecommendation(Session &s)
     {
         Watchable* nextContent= nullptr;
@@ -132,7 +140,10 @@
     GenreRecommenderUser::GenreRecommenderUser(const std::string &name): User(name){}
     GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser& other): User(other){}
 
-    //Methods
+    //Methods:
+    std::ostream& operator << (std::ostream& os, const RerunRecommenderUser &user) {
+        return (os << user.getName() << "\n Recommendation algo: gen "<< std::endl);
+    }
     void GenreRecommenderUser::add_tag_freq(const std::string &tag)
     {
         this->tags_freq[tag]++

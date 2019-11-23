@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
+
 class Watchable;
 class Session;
 
@@ -28,7 +29,6 @@ private:
 
 };
 
-
 class LengthRecommenderUser : public User {
 public:
     LengthRecommenderUser(const std::string &name);
@@ -37,7 +37,7 @@ public:
     LengthRecommenderUser(LengthRecommenderUser&& other);//Move constructor
     LengthRecommenderUser& operator=(const LengthRecommenderUser& other); //copy assignment operator
     LengthRecommenderUser& operator=(LengthRecommenderUser&& other); //move assign operator
-
+    friend std::ostream& operator<<(std::ostream& os, const LengthRecommenderUser & user);
 protected:
     double calculate_avg_time();
     void set_remaning_watchable(std::vector<Watchable*> remaning_watchable);
@@ -52,6 +52,8 @@ public:
     RerunRecommenderUser(const std::string& name);
     RerunRecommenderUser(const RerunRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
+    friend std::ostream& operator<<(std::ostream& os, const RerunRecommenderUser & user);
+
 private:
     int index;
 };
@@ -63,6 +65,9 @@ public:
     virtual Watchable* getRecommendation(Session& s);
     void add_tag_freq(const std::string& tag);
     void set_remaning_watchable(std::vector<Watchable*> remaning_watchable);
+    friend std::ostream& operator<<(std::ostream& os, const GenreRecommenderUser & user);
+
+
 private:
     std::unordered_map<std::string, int>  tags_freq; //TODO: add some kind of data structure to count how many of the tags has the user watched
     std::vector<Watchable*> remaning_watchable;
