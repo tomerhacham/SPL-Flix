@@ -31,9 +31,23 @@
     Session::Session(const Session &other) {}
 
 //Methods:
+
+    public std::vector<string&> get_parameters(){
+    return this.parameters();
+    }
     public std::vector<Watchable*> get_content(){
     return  this.content;
-    };
+    }
     void Session::start() {}
 
     //TODO: need to make a getter for the content vector
+    void Session::addUser(User* user) {
+        userMap.insert(user->getName(), user);
+    }
+    void Session::addAction(BaseAction act) {
+        actionsLog.push_back(act);
+}
+    void Session::getUserByName(string) {
+
+
+}
