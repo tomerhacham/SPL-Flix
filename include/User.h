@@ -20,13 +20,14 @@ public:
     virtual User* clone()=0;
     virtual ~User();//destructor
     virtual Watchable* getRecommendation(Session& s) = 0;
-
     string getName() const;
+    void setName(string name);
+    virtual void watch(Watchable* watched_content);
     vector<Watchable*> get_history() const;
 protected:
     vector<Watchable*> history;
 private:
-    const string name;
+    string name;
 
 };
 
@@ -38,15 +39,15 @@ public:
     LengthRecommenderUser(LengthRecommenderUser&& other);//Move constructor
     LengthRecommenderUser& operator=(const LengthRecommenderUser& other); //copy assignment operator
     LengthRecommenderUser& operator=(LengthRecommenderUser&& other); //move assign operator
-    friend ostream& operator<<(std::ostream& os, const LengthRecommenderUser & user);
+    friend ostream& operator<<(ostream& os, const LengthRecommenderUser & user);
     virtual LengthRecommenderUser* clone();
 protected:
     double calculate_avg_time();
-    void set_remaning_watchable(vector<Watchable*> remaning_watchable);
+    void set_remaning_watchable(vector<Watchable*> all_content);
 
 private:
     double avgTime;
-    std::vector<Watchable*> remaning_watchable;
+    vector<Watchable*> remaning_watchable;
 };
 
 class RerunRecommenderUser : public User {
@@ -66,10 +67,9 @@ public:
     GenreRecommenderUser(const GenreRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
     void add_tag_freq(const string& tag);
-    void set_remaning_watchable(vector<Watchable*> remaning_watchable);
+    void set_remaning_watchable(vector<Watchable*> all_content);
     friend ostream& operator<<(ostream& os, const GenreRecommenderUser & user);
     virtual GenreRecommenderUser* clone();
-
 private:
     unordered_map<string, int>  tags_freq; //TODO: add some kind of data structure to count how many of the tags has the user watched
     vector<Watchable*> remaning_watchable;

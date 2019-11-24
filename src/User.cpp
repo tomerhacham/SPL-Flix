@@ -51,6 +51,15 @@ using namespace std;
     string User::getName() const {return this->name;}
     vector<Watchable*> User::get_history() const {return this->history;}
 
+    void User::setName(string name) {
+        this->name=name;
+    }
+
+void User::watch(Watchable *watched_content) {
+        this->history.push_back(watched_content);
+}
+
+
 //endregion
 
 //region User - Length Recommender
@@ -78,7 +87,7 @@ using namespace std;
         }
         this->avgTime=(avg/history.size());
     }
-    void LengthRecommenderUser::set_remaning_watchable(std::vector<Watchable *> all_content)
+    void LengthRecommenderUser::set_remaning_watchable(vector<Watchable *> all_content)
     {
         vector<Watchable*> remaning_content ;
         for(int i=0;i<all_content.size();i++) {
@@ -109,9 +118,14 @@ using namespace std;
         return nextContent;
     }
 
-LengthRecommenderUser *LengthRecommenderUser::clone() {
-    return new LengthRecommenderUser(&this);
-}
+    LengthRecommenderUser *LengthRecommenderUser::clone() {
+        return new LengthRecommenderUser(&this);
+    }
+
+    void LengthRecommenderUser::watch(Watchable *watched_content) {
+        this->history.push_back(watched_content);
+
+    }
 //endregion
 
 //region User - Rerun Recommender

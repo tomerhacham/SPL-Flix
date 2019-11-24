@@ -4,6 +4,7 @@
 #include <sstream>
 #include <include/Session.h>
 #include "include/Action.h"
+#include "include/Watchable.h"
 using namespace std;
 
 //region BaseAction - abstract
@@ -133,11 +134,12 @@ using namespace std;
         }
         else if(user!= nullptr){
             User* duplicate_user =user->clone();
+            duplicate_user->setName(new_username);
             session.addUser(duplicate_user);
             this->complete();
         }
     }
-    std::string PrintContentList::toString() const {}
+    string PrintContentList::toString() const {}
 //endregion
 
 // region PrintWatchHistory
@@ -147,8 +149,10 @@ using namespace std;
     void PrintWatchHistory::act(Session &sess) {
         Session& session = sess;
 
-
-
+        vector<Watchable *> content = session.get_content();
+        for(int i=0; i<content.size();i++){
+            cout<<content.at(i)->toString();
+        }
     }
     string PrintWatchHistory::toString() const {}
 //endregion
@@ -157,8 +161,18 @@ using namespace std;
     //Constructors:
 
     //Methods:
-    void Watch::act(Session &sess) {}
-    std::string Watch::toString() const {}
+    void Watch::act(Session &sess)
+    {
+        Session& session = sess;
+        stringstream stm(session.get_parameters().at(1));
+        int content_id=0;
+        stm>>content_id; //preform cast of string to int in order to search the content_id
+        Watchable* toWatch= session.find_content_by_id();
+        session.get_active_user().watch
+
+
+    }
+    string Watch::toString() const {}
 //endregion
 
 // region PrintActionsLog
@@ -166,7 +180,7 @@ using namespace std;
 
     //Methods:
     void PrintActionsLog::act(Session &sess) {}
-    std::string PrintActionsLog::toString() const {}
+    string PrintActionsLog::toString() const {}
 //endregion
 
 // region Exit

@@ -6,7 +6,7 @@ using namespace std;
 //region Watchable - abstract
 
     //Constructors:
-    Watchable::Watchable(long id, int length, const std::vector<std::string> &tags) : id(id), length(length) , tags(tags) {}
+    Watchable::Watchable(long id, int length, const vector<string> &tags) : id(id), length(length) , tags(tags) {}
     Watchable::Watchable(const Watchable& other): id(other.id), length(other.length){
         for(int i=0; i<other.tags.size();i++){
 
