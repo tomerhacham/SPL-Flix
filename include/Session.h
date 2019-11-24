@@ -16,7 +16,7 @@ public:
     ~Session();
     void start();
     void addUser(User*);
-    void addAction(BaseAction*);
+    CreateUser addAction(BaseAction*);
     void getUserByName(string);
 
 

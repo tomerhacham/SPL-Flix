@@ -42,7 +42,7 @@ using namespace std;
         Session &session = sess;
         vector<string>& parameters = session.get_parameters(); //TODO:implement get_param method
         string username = parameters.at(0);
-        string algorithm = parameters.at(1);
+        string algorithm = parameters.at(1);//TODO: needs to check if there is another user with this name
         if(is_valid_algorithm(algorithm)){
             User* new_user;
             if (algorithm == "len") {
@@ -56,9 +56,9 @@ using namespace std;
             this->complete();
         }
         else{
-            this->error("Invalid username or whatever...");
+            this->error("Invalid Algorithem");
         }
-        session.addAction(*this);//TODO: implemnt at Session
+        session.addAction(this);//TODO: implemnt at Session
 
     }
         string CreateUser::toString() const
@@ -92,7 +92,7 @@ using namespace std;
         else{
             this->error("Error at ChangeActiveUser");
         }
-        session.addAction(*this);//TODO: implemnt at Session
+        session.addAction(this);//TODO: implemnt at Session
 
     }
     std::string ChangeActiveUser::toString() const {}
@@ -113,7 +113,7 @@ using namespace std;
         else{
             this->error("Error at Delete User");
         }
-        session.addAction(*this);//TODO: implemnt at Session
+        session.addAction(this);//TODO: implemnt at Session
     }
     std::string DeleteUser::toString() const {}
 //endregion

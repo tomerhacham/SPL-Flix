@@ -48,17 +48,17 @@ using namespace std;
     }
 
     //Methods:
-    std::string User::getName() const {return this->name;}
-    std::vector<Watchable*> User::get_history() const {return this->history;}
+    string User::getName() const {return this->name;}
+    vector<Watchable*> User::get_history() const {return this->history;}
 
 //endregion
 
 //region User - Length Recommender
 
     //Constructor:
-    LengthRecommenderUser::LengthRecommenderUser(const std::string &name):User(name){}
+    LengthRecommenderUser::LengthRecommenderUser(const string &name):User(name){}
     LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {}
-    LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User::User(other), avgTime(other.avgTime)//Move constructor
+    LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User(other), avgTime(other.avgTime)//Move constructor
     {
     //TODO: do we need to clear the pointer of the vector?
     }
@@ -66,8 +66,8 @@ using namespace std;
     LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other){}//Move assingment operator
 
     //Methods:
-    std::ostream& operator << (std::ostream& os, const LengthRecommenderUser &user) {
-        return (os << user.getName() << "\n Recommendation algo: len "<< std::endl);
+    ostream& operator << (ostream& os, const LengthRecommenderUser &user) {
+        return (os << user.getName() << "\n Recommendation algo: len "<< endl);
     }
 
     double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
@@ -80,9 +80,9 @@ using namespace std;
     }
     void LengthRecommenderUser::set_remaning_watchable(std::vector<Watchable *> all_content)
     {
-        std::vector<Watchable*> remaning_content ;
+        vector<Watchable*> remaning_content ;
         for(int i=0;i<all_content.size();i++) {
-            if (std::find(this->history.begin(), this->history.end(), all_content.at(i)) != this->history.end()) {
+            if (find(this->history.begin(), this->history.end(), all_content.at(i)) != this->history.end()) {
                 /* history contains all_content.at(i) */
             } else {
                 /* history does not contain all_content.at(i) */
@@ -95,14 +95,13 @@ using namespace std;
     {
         Session* session = &s;
         Watchable* nextContent= nullptr;
-        //std::vector<Watchable*> all_content=session.get_content();
         set_remaning_watchable(session.get_content())
 
         if(!this->remaning_watchable.empty()){
-            double timedif=std::abs(this->remaning_watchable.front()->get_length()- avgTime);
+            double timedif=abs(this->remaning_watchable.front()->get_length()- avgTime);
             for(int i=0;i<remaning_content.size();i++){
-                if((std::abs(remaning_content.at(i)-this->avgTime))<timedif){
-                    timedif = std::abs(remaning_content.at(i)-this->avgTime);
+                if((abs(remaning_content.at(i)-this->avgTime))<timedif){
+                    timedif = abs(remaning_content.at(i)-this->avgTime);
                     nextContent=remaning_content.at(i);
                 }
             }
@@ -144,7 +143,7 @@ RerunRecommenderUser *RerunRecommenderUser::clone() {
 //region User - Similar Genre
 
     // Constructors
-    GenreRecommenderUser::GenreRecommenderUser(const std::string &name): User(name){}
+    GenreRecommenderUser::GenreRecommenderUser(const string &name): User(name){}
     GenreRecommenderUser::GenreRecommenderUser(const GenreRecommenderUser& other): User(other)
     {
         for(auto elem : other.tags_freq)
@@ -156,7 +155,7 @@ RerunRecommenderUser *RerunRecommenderUser::clone() {
 
     //Methods:
     ostream& operator << (ostream& os, const RerunRecommenderUser &user) {
-        return (os << user.getName() << "\n Recommendation algo: gen "<< std::endl);
+        return (os << user.getName() << "\n Recommendation algo: gen "<< endl);
     }
     void GenreRecommenderUser::add_tag_freq(const string &tag)
     {
@@ -164,9 +163,9 @@ RerunRecommenderUser *RerunRecommenderUser::clone() {
     }
     void GenreRecommenderUser::set_remaning_watchable(vector<Watchable *> all_content)
     {
-        std::vector<Watchable*> remaning_content ;
+        vector<Watchable*> remaning_content ;
         for(int i=0;i<all_content.size();i++) {
-            if (std::find(this->history.begin(), this->history.end(), all_content.at(i)) != this->history.end()) {
+            if (find(this->history.begin(), this->history.end(), all_content.at(i)) != this->history.end()) {
                 /* history contains all_content.at(i) */
             } else {
                 /* history does not contain all_content.at(i) */
