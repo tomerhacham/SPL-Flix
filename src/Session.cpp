@@ -44,7 +44,7 @@
     void Session::addUser(User* user) {
         userMap.insert(user->getName(), user);
     }
-    void Session::addAction(BaseAction act) {
+    void Session::addAction(BaseAction* act) {
         actionsLog.push_back(act);
 }
     void Session::getUserByName(string) {
