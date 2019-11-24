@@ -144,8 +144,13 @@ using namespace std;
     //Constructors:
 
     //Methods:
-    void PrintWatchHistory::act(Session &sess) {}
-    std::string PrintWatchHistory::toString() const {}
+    void PrintWatchHistory::act(Session &sess) {
+        Session& session = sess;
+
+
+
+    }
+    string PrintWatchHistory::toString() const {}
 //endregion
 
 // region Watch

@@ -14,11 +14,11 @@ using namespace std;
         }
     }
     //Methods:
-    const std::vector<std::string> Watchable::get_tags() const {return this->tags;}
+    const vector<string> Watchable::get_tags() const {return this->tags;}
     const long Watchable::get_id() const {return this->id;}
     const int Watchable::get_length() const {return this->length;}
-    const std::string Watchable::concat_tags() const {
-        std::string concat_tags="[";
+    const string Watchable::concat_tags() const {
+        string concat_tags="[";
         for(int i=0;i<this->tags.size();i++){
             concat_tags.append(tags.at(i));
             concat_tags.append(",");
@@ -31,7 +31,7 @@ using namespace std;
 //region Movie
 
     //Constructors
-    Movie::Movie(long id, const std::string &name, int length, const std::vector<std::string> &tags): Watchable(id,length,tags), name(name) {}
+    Movie::Movie(long id, const std::string &name, int length, const vector<string> &tags): Watchable(id,length,tags), name(name) {}
     Movie::Movie(const Movie &other):Watchable(other), name(other.name) {}
     Movie::~Movie() {}
 
@@ -40,10 +40,10 @@ using namespace std;
     {
         return new Movie(*this);
     }
-    const std::string Movie::get_name() {return this->name;}
-    std::string Movie::toString() const {
-        std::ostringstream strout;
-        strout<< std::to_string(this->get_id())<<" " << this->name << " " << this->get_length()<< "minutes";
+    const string Movie::get_name() {return this->name;}
+    string Movie::toString() const {
+        ostringstream strout;
+        strout<< to_string(this->get_id())<<" " << this->name << " " << this->get_length()<< "minutes";
         return strout.str().append(this->concat_tags());
     }
     Watchable* Movie::getNextWatchable(Session &) const {}
@@ -53,8 +53,8 @@ using namespace std;
 //region Episode
 
     //Constructors:
-    Episode::Episode(long id, const std::string &seriesName, int length, int season, int episode,
-                     const std::vector<std::string> &tags):Watchable(id,length,tags), seriesName(seriesName), season(season), episode(episode)
+    Episode::Episode(long id, const string &seriesName, int length, int season, int episode,
+                     const vector<string> &tags):Watchable(id,length,tags), seriesName(seriesName), season(season), episode(episode)
     {
         //TODO: get next episode id if available
     }
@@ -72,13 +72,13 @@ using namespace std;
         return new Episode(*this);
     }
 
-    std::string Episode::toString() const {
-        std::ostringstream strout;
-        strout<< std::to_string(this->get_id())<<". " << this->get_seriesName() << " S"<<std::to_string(this->get_season()) <<"E"<<std::to_string(this->get_episode())<<" " <<this->get_length()<<" minutes";
+    string Episode::toString() const {
+        ostringstream strout;
+        strout<<to_string(this->get_id())<<". " << this->get_seriesName() << " S"<<to_string(this->get_season()) <<"E"<<to_string(this->get_episode())<<" " <<this->get_length()<<" minutes";
         return strout.str().append(this->concat_tags());
     }
     Watchable* Episode::getNextWatchable(Session &) const {}//TODO:implement
-    const std::string Episode::get_seriesName() const {return this->seriesName;}
+    const string Episode::get_seriesName() const {return this->seriesName;}
     int Episode::get_episode() const {return this->episode;}
     int Episode::get_season() const {return this->season;}
     long Episode::get_next_EpisodeId() { return this->nextEpisodeId;};
