@@ -3,14 +3,14 @@
 #include <fstream>
 #include <iostream>
 #include <Watchable.h>
-
+using namespace std;
 //Constructors
-    Session::Session(const std::string &configFilePath) {
+    Session::Session(const string &configFilePath) {
     using json= nlohamann::json;
-    std::ifstream i(configFilePath);
+    ifstream i(configFilePath);
     json* inf;
     i >> inf;
-    std:: cout << inf << std::endl;
+    cout << inf << endl;
 
     int id=0;
     for(int i=0; inf["movies"].size(); i++){
@@ -32,11 +32,14 @@
 
 //Methods:
 
-    public std::vector<string&> get_parameters(){
+    public vector<string&> get_parameters(){
     return this.parameters();
     }
-    public std::vector<Watchable*> get_content(){
+    public vector<Watchable*> get_content(){
     return  this.content;
+    }
+    public vector<string> parsing(string s){
+
     }
     void Session::start() {}
 
@@ -44,10 +47,20 @@
     void Session::addUser(User* user) {
         userMap.insert(user->getName(), user);
     }
-    CreateUser Session::addAction(BaseAction* act) {
+    void Session::addAction(BaseAction* act) {
         actionsLog.push_back(act);
 }
-    void Session::getUserByName(string) {
-
-
+    void Session::getUserByName(string key) {
+        std::unordered_map<std::string,User*>::iterator iter= userMap.find(key);
+        if ( iter == userMap.end() )
+            return nullptr;
+        else
+            return userMap.at(key);
 }
+    void Session::Change_Active_User(User * user) {
+        this->activeUser= nullptr;
+        this->activeUser= user;
+    }
+    void Session::Get_parametrs() {}// check if this watch,createuser.. and put the string into vector and play the right method
+
+

@@ -16,8 +16,11 @@ public:
     ~Session();
     void start();
     void addUser(User*);
-    CreateUser addAction(BaseAction*);
+    void addAction(BaseAction*);
     void getUserByName(string);
+    void Change_Active_User (User*);
+    void Get_parametrs ();
+    vector<string> parsing(string);
 
 
     std::vector<Watchable*> get_content();
