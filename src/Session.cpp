@@ -28,39 +28,84 @@ using namespace std;
     }
 
 }
-    Session::Session(const Session &other) {}
+    Session::Session(const Session &other) {
+
+    }//TODO: implement this copy constructor
+    Session::~Session() {
+        delete this->activeUser;
+        this->userMap.clear();
+        for(int i=0;i<this->content.size();i++) {
+            Watchable *cont = this->content.at(i);
+            delete cont;
+        }
+        this->content.clear();
+        for(int i=0;i<this->actionsLog.size();i++) {
+            BaseAction* act = this->actionsLog.at(i);
+            delete act;
+        }
+        this->actionsLog.clear();
+        for(int i=0;i<this->parameters.size();i++) {
+            string parm = this->parameters.at(i);
+            delete parm;
+        }
+        this->parameters.clear();
+
+    }
+
 
 //Methods:
-
-    public vector<string&> get_parameters(){
+public:
+    vector<string&> get_parameters(){
     return this.parameters();
     }
-    public vector<Watchable*> get_content(){
+    vector<Watchable *> Session::get_content(){
     return  this.content;
     }
-    public vector<string> parsing(string s){
-
+    Watchable * Session::find_content_by_id(long id) {
+        for(i=0; i<content.size(); i++){
+         Watchable* w = content.at(i);
+            if(w->get_id()== id){
+                return w;
+            }
+        }
+      return nullptr;
     }
-    void Session::start() {}
+    User *Session::get_active_user() {
+        return this->activeUser;
+    }
+    vector<BaseAction *> Session::get_actionlog() {
+     return this->actionsLog;
+    }
 
-    //TODO: need to make a getter for the content vector
+    void Session::start() {}
     void Session::addUser(User* user) {
         userMap.insert(user->getName(), user);
     }
     void Session::addAction(BaseAction* act) {
         actionsLog.push_back(act);
 }
-    void Session::getUserByName(string key) {
+    void Session::get_userbyName(string key) {
         std::unordered_map<std::string,User*>::iterator iter= userMap.find(key);
         if ( iter == userMap.end() )
             return nullptr;
         else
             return userMap.at(key);
 }
-    void Session::Change_Active_User(User * user) {
+    void Session::change_active_user(User * user) {
         this->activeUser= nullptr;
         this->activeUser= user;
     }
-    void Session::Get_parametrs() {}// check if this watch,createuser.. and put the string into vector and play the right method
+    void Session::parsing(string s)  {
+        stringstream ss(s);
+        istream_iterator<string> begin(ss);
+        istream_iterator<string> end;
+        vector<string> parameters(begin, end);
+        copy(parameters.begin(), parameters.end(), ostream_iterator<string>);
+        this->parameters= parameters;
+    }
+    void Session::delete_user(User * user) {
+        userMap.erase(user);
+        delete user;
+    }
 
 

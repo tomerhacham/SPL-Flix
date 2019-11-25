@@ -11,19 +11,23 @@ class Watchable;
 
 class Session{
 public:
+
     Session(const std::string &configFilePath);
     Session(const Session& other);
     ~Session();
+    public: vector<string> get_parameters();
+    public: vector<Watchable*> get_content();
+    public: Watchable* find_content_by_id(long):
+    public: User* get_active_user();
+    public: vector<BaseAction*> get_actionlog();
+
     void start();
     void addUser(User*);
     void addAction(BaseAction*);
-    void getUserByName(string);
-    void Change_Active_User (User*);
-    void Get_parametrs ();
-    vector<string> parsing(string);
-
-
-    std::vector<Watchable*> get_content();
+    void get_userbyName(string);
+    void change_active_user (User*);
+    void parsing(string);
+    void delete_user(User*);
 
 private:
     std::vector<Watchable*> content;
