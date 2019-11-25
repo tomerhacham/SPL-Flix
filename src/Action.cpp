@@ -188,9 +188,9 @@ using namespace std;
         if(!all_action.empty()) {
             for (int i = all_action.size() - 1; i >= 0; i--) {
                 ostringstream strout;
-                ActionStatus status = all_action.at(i)->getStatus();
+                string status = (const char*) all_action.at(i)->getStatus();
                 strout << all_action.at(i)->toString() << " " << status;
-                if(status==ERROR){
+                if(status=="ERROR"){
                     strout<<": "<<all_action.at(i)->getErrorMsg();
                 }
                 cout<<strout.str()<<endl;
