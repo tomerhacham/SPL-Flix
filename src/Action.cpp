@@ -53,13 +53,13 @@ using namespace std;
             } else if (algorithm == "gen") {
                 new_user = new GenreRecommenderUser(username);
             }
-            session.addUser(new_user);//TODO: implement at Session
+            session.addUser(new_user);
             this->complete();
         }
         else{
             this->error("Invalid Algorithem");
         }
-        session.addAction(this);//TODO: implemnt at Session
+        session.addAction(this);
 
     }
         string CreateUser::toString() const
@@ -83,7 +83,7 @@ using namespace std;
     void ChangeActiveUser::act(Session &sess)
     {
         Session& session = sess;
-        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string> parameters = session.get_parameters();
         string username = parameters.at(0);
         User* user = session.get_userbyName(username);//TODO: implement get_userByname at session return nullptr if not found
         if(user!=nullptr) {
@@ -93,7 +93,7 @@ using namespace std;
         else{
             this->error("Error at ChangeActiveUser");
         }
-        session.addAction(this);//TODO: implemnt at Session
+        session.addAction(this);
 
     }
     std::string ChangeActiveUser::toString() const {}
@@ -104,17 +104,17 @@ using namespace std;
     //Methods:
     void DeleteUser::act(Session &sess) {
         Session& session = sess;
-        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string> parameters = session.get_parameters();
         string username = parameters.at(0);
-        User* user = session.get_userbyName(username);//TODO: implement get_userByname at session return nullptr if not found
+        User* user = session.get_userbyName(username);
         if(user!= nullptr){
-            session.delete_user(user);
+            session.delete_user(user);//TODO: implement delete_user at session
             this->complete();
         }
         else{
             this->error("Error at Delete User");
         }
-        session.addAction(this);//TODO: implemnt at Session
+        session.addAction(this);
     }
     std::string DeleteUser::toString() const {}
 //endregion
@@ -125,10 +125,10 @@ using namespace std;
     void DuplicateUser::act(Session &sess)
     {
         Session& session = sess;
-        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string> parameters = session.get_parameters();
         string username = parameters.at(0);
         string new_username = parameters.at(1);
-        User* user = session.get_userbyName(username);//TODO: implement get_userByname at session return nullptr if not found
+        User* user = session.get_userbyName(username);
         if(username==new_username){
             this->error("Duplicate user with the same Username");
         }
@@ -167,8 +167,8 @@ using namespace std;
         stringstream stm(session.get_parameters().at(1));
         int content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
-        Watchable* toWatch= session.find_content_by_id();
-        session.get_active_user().watch
+        Watchable* toWatch= session.find_content_by_id();//TODO:implement find_content_by_id at session
+        session.get_active_user().watch //TODO:implement get_active_user at session
 
 
     }

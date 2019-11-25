@@ -71,7 +71,7 @@ public:
     friend ostream& operator<<(ostream& os, const GenreRecommenderUser & user);
     virtual GenreRecommenderUser* clone();
 private:
-    unordered_map<string, int>  tags_freq; //TODO: add some kind of data structure to count how many of the tags has the user watched
+    unordered_map<string, int>  tags_freq;
     vector<Watchable*> remaning_watchable;
 };
 

@@ -100,7 +100,7 @@ void User::watch(Watchable *watched_content) {
         }
         this->remaning_watchable=remaning_content;
     }
-    Watchable* LengthRecommenderUser::getRecommendation(Session &s) //TODO:: implements by the algorithm
+    Watchable* LengthRecommenderUser::getRecommendation(Session &s)
     {
         Session* session = &s;
         Watchable* nextContent= nullptr;
@@ -188,7 +188,7 @@ RerunRecommenderUser *RerunRecommenderUser::clone() {
         }
         this->remaning_watchable=remaning_content;
     }
-    Watchable* GenreRecommenderUser::getRecommendation(Session &s) //TODO: we needs to impelemnt some king of data structure to store the number of the stuff the the user watch per tag
+    Watchable* GenreRecommenderUser::getRecommendation(Session &s)
     {
         int freq=0;
         string most_popular_tag;
