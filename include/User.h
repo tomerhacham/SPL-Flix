@@ -44,6 +44,7 @@ public:
     virtual string toString();
     virtual LengthRecommenderUser* clone();
     vector<Watchable*> get_remaning_watchable();
+
 protected:
     double calculate_avg_time();
     void set_remaning_watchable(vector<Watchable*> all_content);
@@ -58,6 +59,8 @@ public:
     RerunRecommenderUser(const string& name);
     RerunRecommenderUser(const RerunRecommenderUser& other);
     virtual Watchable* getRecommendation(Session& s);
+    RerunRecommenderUser& operator=(const RerunRecommenderUser& other); //copy assignment operator
+    RerunRecommenderUser& operator=(RerunRecommenderUser&& other); //move assign operator
     friend ostream& operator<<(ostream& os, const RerunRecommenderUser & user);
     virtual string toString();
     virtual RerunRecommenderUser* clone();
@@ -73,9 +76,12 @@ public:
     void add_tag_freq(const string& tag);
     void set_remaning_watchable(vector<Watchable*> all_content);
     friend ostream& operator<<(ostream& os, const GenreRecommenderUser & user);
+    GenreRecommenderUser& operator=(const GenreRecommenderUser& other); //copy assignment operator
+    GenreRecommenderUser& operator=(GenreRecommenderUser&& other); //move assign operator
     virtual GenreRecommenderUser* clone();
     virtual string toString();
     vector<Watchable*> get_remaning_watchable();
+    unordered_map<string, int> get_tags_freq();
 private:
     unordered_map<string, int>  tags_freq;
     vector<Watchable*> remaning_watchable;

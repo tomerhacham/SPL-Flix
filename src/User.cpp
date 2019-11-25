@@ -19,10 +19,14 @@ using namespace std;
     User& User::operator=(const User &other) //copy assignment operator
     {
         if(this!=&other){
+            this.name=other.getName();
             for(int i=0;i<history.size();i++){
                 Watchable* watch = history.at(i);
-                delete watch;
-                this->history.at(i)=other.history.at(i)->clone();
+                delete *watch;
+            }
+            history.clear();
+            for(int i=0;i<other.get_history().size();i++){
+                history.push_back(other.get_history().at(i)->clone());
             }
         }
         return *this;
@@ -32,7 +36,7 @@ using namespace std;
         if(this!=&other){
             for(int i=0;i<history.size();i++) {
                 Watchable *watch = history.at(i);
-                delete watch;
+                delete *watch;
             }
             this->history=other.history;
         }
@@ -69,25 +73,55 @@ using namespace std;
     {
     //TODO: do we need to clear the pointer of the vector?
     }
-    LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other){}//copy assignment operator
+    LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other)//copy assignment operator
+            {
+                if(this!=&other){
+                    this.name=other.getName();
+                    this->avgTime=other.avgTime;
+                    for(int i=0;i<history.size();i++){
+                        Watchable* watch = history.at(i);
+                        delete *watch;
+                    }
+                    for(int i=0;i<remaning_watchable.size();i++){
+                        Watchable* watch = remaning_watchable.at(i);
+                        delete *watch;
+                    }
+                    history.clear();
+                    remaning_watchable.clear();
+
+                    for(int i=0;i<other.get_history().size();i++){
+                        history.push_back(other.get_history().at(i)->clone());
+                    }
+                    for(int i=0;i<other.get_remaning_watchable().size();i++){
+                        remaning_watchable.push_back(other.get_remaning_watchable().at(i)->clone());
+                    }
+                }
+                return *this;
+            }
     LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other)//Move assingment operator
     {
-        this->setName(other.getName());
-        for(int i=0;i>history.size();i++){
-            Watchable* content this->history;
-            if(content!=nullptr){
-                delete *history.at(i);
+        if(this!=&other){
+            this->setName(other.getName());
+            this->avgTime=other.avgTime;
+            for(int i=0;i>history.size();i++){
+                Watchable* content this->history.at(i);
+                if(content!=nullptr){
+                    delete *content;
+                }
             }
-        }
-        history.clear();
-        for(int i=0;i<remaning_watchable.size();i++){
-            Watchable* content this->remaning_watchable.at(i);
-            if(content != nullptr){
-                delete *content;
+
+            for(int i=0;i<remaning_watchable.size();i++){
+                Watchable* content this->remaning_watchable.at(i);
+                if(content != nullptr){
+                    delete *content;
+                }
             }
+            history.clear();
+            remaning_watchable.clear();
+            this.history = other.get_history();
+            this->remaning_watchable = other.get_remaning_watchable();
         }
-        this.history = other.get_history();
-        this->remaning_watchable = other.get_remaning_watchable();
+        return *this;
     }
 
     //Methods:
@@ -132,25 +166,21 @@ using namespace std;
         }
         return nextContent;
     }
-
     LengthRecommenderUser *LengthRecommenderUser::clone() {
         return new LengthRecommenderUser(&this);
     }
-
     string LengthRecommenderUser::toString() {
         string toReturn=this->getName();
         toReturn.append(" len")
         return toReturn;
 }
-
-vector<Watchable *> LengthRecommenderUser::get_remaning_watchable() {
-    return this->remaning_watchable();
+    vector<Watchable *> LengthRecommenderUser::get_remaning_watchable() {
+        return this->remaning_watchable();
 }
+    void LengthRecommenderUser::watch(Watchable *watched_content) {
+            this->history.push_back(watched_content);
 
-void LengthRecommenderUser::watch(Watchable *watched_content) {
-        this->history.push_back(watched_content);
-
-    }
+        }
 //endregion
 
 //region User - Rerun Recommender
@@ -174,15 +204,36 @@ void LengthRecommenderUser::watch(Watchable *watched_content) {
         return nextContent;
     }
 
-RerunRecommenderUser *RerunRecommenderUser::clone() {
-    return new RerunRecommenderUser(&this);
-}
+    RerunRecommenderUser *RerunRecommenderUser::clone() {
+        return new RerunRecommenderUser(&this);
+    }
 
-string RerunRecommenderUser::toString() {
-    string toReturn=this->getName();
-    toReturn.append(" rer")
-    return toReturn;
-}
+    string RerunRecommenderUser::toString() {
+        string toReturn=this->getName();
+        toReturn.append(" rer")
+        return toReturn;
+    }
+    RerunRecommenderUser &RerunRecommenderUser::operator=(const RerunRecommenderUser &other)//copy assignment operator
+             {
+            //TODO:implement copy assignment
+    }
+
+    RerunRecommenderUser &RerunRecommenderUser::operator=(RerunRecommenderUser &&other)//move assign operato
+    {
+     if(this!=&other){
+        this.name=other.getName();
+        this.index=other.index;
+         for(int i=0;i>history.size();i++){
+             Watchable* content this->history.at(i);
+             if(content!=nullptr){
+                 delete *content);
+             }
+         }
+         history.clear();
+         this->history=other.get_history();
+     }
+     return *this;
+    }
 //endregion
 
 //region User - Similar Genre
@@ -253,18 +304,52 @@ string RerunRecommenderUser::toString() {
         return nextContent;
     }
 
-GenreRecommenderUser *GenreRecommenderUser::clone() {
-    return new GenreRecommenderUser(&this);
+    GenreRecommenderUser *GenreRecommenderUser::clone() {
+        return new GenreRecommenderUser(&this);
 
-}
+    }
+    string GenreRecommenderUser::toString() {
+        string toReturn=this->getName();
+        toReturn.append(" gen")
+        return toReturn;
+    }
 
-string GenreRecommenderUser::toString() {
-    string toReturn=this->getName();
-    toReturn.append(" gen")
-    return toReturn;
-}
+    vector<Watchable *> GenreRecommenderUser::get_remaning_watchable() {
+        return this->remaning_watchable;
+    }
 
-vector<Watchable *> GenreRecommenderUser::get_remaning_watchable() {
-    return this->remaning_watchable;
+    GenreRecommenderUser &GenreRecommenderUser::operator=(GenreRecommenderUser &&other) //move assign operator
+    {
+        if (this != &other) {
+            this.name = other.getName();
+            for (int i = 0; i > history.size(); i++) {
+                Watchable *content
+                this->history.at(i);
+                if (content != nullptr) {
+                    delete *content;
+                }
+            }
+            for (int i = 0; i < remaning_watchable.size(); i++) {
+                Watchable *content
+                this->remaning_watchable.at(i);
+                if (content != nullptr) {
+                    delete *content;
+                }
+            }
+            this->tags_freq.clear()
+            this->history.clear();
+            this->remaning_watchable.clear();
+            this->tags_freq=other.get_tags_freq();
+
+        }
+        return *this;
+    }
+
+    unordered_map<string, int> GenreRecommenderUser::get_tags_freq() {
+        return this->tags_freq;
+    }
+
+GenreRecommenderUser &GenreRecommenderUser::operator=(const GenreRecommenderUser &other) {
+    //TODO: implement the copy assignment operator
 }
 //endregion
