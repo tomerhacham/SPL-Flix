@@ -42,7 +42,7 @@ using namespace std;
     {
     for(int i=0;i<history.size();i++){
         Watchable* watch = this->history.at(i);
-        delete watch;
+        delete *watch; //TODO: not sure if this is the right syntax
      }
     history.clear();
     }
@@ -78,6 +78,7 @@ void User::watch(Watchable *watched_content) {
     ostream& operator << (ostream& os, const LengthRecommenderUser &user) {
         return (os << user.getName() << "\n Recommendation algo: len "<< endl);
     }
+
 
     double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
     {
@@ -122,7 +123,13 @@ void User::watch(Watchable *watched_content) {
         return new LengthRecommenderUser(&this);
     }
 
-    void LengthRecommenderUser::watch(Watchable *watched_content) {
+    string LengthRecommenderUser::toString() {
+        string toReturn;
+
+        return std::__cxx11::string();
+}
+
+void LengthRecommenderUser::watch(Watchable *watched_content) {
         this->history.push_back(watched_content);
 
     }

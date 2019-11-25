@@ -10,7 +10,7 @@ using namespace std;
 //region BaseAction - abstract
 
     //Constructors:
-    BaseAction::BaseAction() :status(PENDING){}
+    BaseAction::BaseAction() :status(PENDING), errorMsg(""){}
 
     //Methods:
     void BaseAction::complete()
@@ -64,9 +64,11 @@ using namespace std;
     }
         string CreateUser::toString() const
         {
-            ostringstream strout;
-            //strout<< ;
-            return strout.str();
+            string toReturn="CreateUser ";
+            toReturn.append((const char*) this->getStatus());
+            toReturn.append(" ");
+            toReturn.append(this->getErrorMsg());
+            return toReturn;
         }
     bool CreateUser::is_valid_algorithm(string parameter) {
         if(parameter!="rer" && parameter!="len" && parameter!="gen"){
@@ -96,7 +98,14 @@ using namespace std;
         session.addAction(this);
 
     }
-    std::string ChangeActiveUser::toString() const {}
+    string ChangeActiveUser::toString() const {
+        string toReturn="ChangeActiveUser ";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(" ");
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+
+    }
 //endregion
 
 //region DeleteUser
@@ -116,7 +125,14 @@ using namespace std;
         }
         session.addAction(this);
     }
-    std::string DeleteUser::toString() const {}
+    string DeleteUser::toString() const {
+        string toReturn="DeleteUser ";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(" ");
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+
+    }
 //endregion
 
 //region DuplicateUser
@@ -139,7 +155,13 @@ using namespace std;
             this->complete();
         }
     }
-    string PrintContentList::toString() const {}
+    string PrintContentList::toString() const {
+        string toReturn="PrintContentList ";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(" ");
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+    }
 //endregion
 
 // region PrintWatchHistory
@@ -154,7 +176,13 @@ using namespace std;
             cout<<content.at(i)->toString();
         }
     }
-    string PrintWatchHistory::toString() const {}
+    string PrintWatchHistory::toString() const {
+            string toReturn="PrintWatchHistory ";
+            toReturn.append((const char*) this->getStatus());
+            toReturn.append(" ");
+            toReturn.append(this->getErrorMsg());
+            return toReturn;
+    }
 //endregion
 
 // region Watch
@@ -164,9 +192,9 @@ using namespace std;
     {
         Session& session = sess;
         stringstream stm(session.get_parameters().at(1));
-        int content_id=0;
+        long content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
-        Watchable* toWatch= session.find_content_by_id();//TODO:implement find_content_by_id at session
+        Watchable* toWatch= session.find_content_by_id(content_id);//TODO:implement find_content_by_id at session
         if(toWatch!=nullptr) {
             session.get_active_user().watch //TODO:implement get_active_user at session
             this->complete();
@@ -176,7 +204,14 @@ using namespace std;
         }
         session.addAction(this);
     }
-    string Watch::toString() const {}
+    string Watch::toString() const {
+        string toReturn="Watch ";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(" ");
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+
+    }
 //endregion
 
 // region PrintActionsLog
@@ -187,20 +222,20 @@ using namespace std;
         vector<BaseAction*> all_action = session.get_actionlog();//TODO:implement getter for the action log
         if(!all_action.empty()) {
             for (int i = all_action.size() - 1; i >= 0; i--) {
-                ostringstream strout;
-                string status = (const char*) all_action.at(i)->getStatus();
-                strout << all_action.at(i)->toString() << " " << status;
-                if(status=="ERROR"){
-                    strout<<": "<<all_action.at(i)->getErrorMsg();
-                }
-                cout<<strout.str()<<endl;
+                cout<<all_action.at(i)->toString()<<"\n"<<endl;
             }
             this->complete();
         }
         else{this->error("Action Log is empty");}
         session.addAction(this);
     }
-    string PrintActionsLog::toString() const {}
+    string PrintActionsLog::toString() const {
+        string toReturn="PrintActionsLog ";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(" ");
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+    }
 //endregion
 
 // region Exit
