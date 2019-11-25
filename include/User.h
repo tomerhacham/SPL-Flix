@@ -43,6 +43,7 @@ public:
     friend ostream& operator<<(ostream& os, const LengthRecommenderUser & user);
     virtual string toString();
     virtual LengthRecommenderUser* clone();
+    vector<Watchable*> get_remaning_watchable();
 protected:
     double calculate_avg_time();
     void set_remaning_watchable(vector<Watchable*> all_content);
@@ -74,6 +75,7 @@ public:
     friend ostream& operator<<(ostream& os, const GenreRecommenderUser & user);
     virtual GenreRecommenderUser* clone();
     virtual string toString();
+    vector<Watchable*> get_remaning_watchable();
 private:
     unordered_map<string, int>  tags_freq;
     vector<Watchable*> remaning_watchable;

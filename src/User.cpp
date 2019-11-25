@@ -50,14 +50,12 @@ using namespace std;
     //Methods:
     string User::getName() const {return this->name;}
     vector<Watchable*> User::get_history() const {return this->history;}
-
     void User::setName(string name) {
         this->name=name;
     }
-
-void User::watch(Watchable *watched_content) {
-        this->history.push_back(watched_content);
-}
+    void User::watch(Watchable *watched_content) {
+            this->history.push_back(watched_content);
+    }
 
 
 //endregion
@@ -72,14 +70,30 @@ void User::watch(Watchable *watched_content) {
     //TODO: do we need to clear the pointer of the vector?
     }
     LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other){}//copy assignment operator
-    LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other){}//Move assingment operator
+    LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other)//Move assingment operator
+    {
+        this->setName(other.getName());
+        for(int i=0;i>history.size();i++){
+            Watchable* content this->history;
+            if(content!=nullptr){
+                delete *history.at(i);
+            }
+        }
+        history.clear();
+        for(int i=0;i<remaning_watchable.size();i++){
+            Watchable* content this->remaning_watchable.at(i);
+            if(content != nullptr){
+                delete *content;
+            }
+        }
+        this.history = other.get_history();
+        this->remaning_watchable = other.get_remaning_watchable();
+    }
 
     //Methods:
     ostream& operator << (ostream& os, const LengthRecommenderUser &user) {
         return (os << user.getName() << "\n Recommendation algo: len "<< endl);
     }
-
-
     double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
     {
         double avg=0;
@@ -124,9 +138,13 @@ void User::watch(Watchable *watched_content) {
     }
 
     string LengthRecommenderUser::toString() {
-        string toReturn;
+        string toReturn=this->getName();
+        toReturn.append(" len")
+        return toReturn;
+}
 
-        return std::__cxx11::string();
+vector<Watchable *> LengthRecommenderUser::get_remaning_watchable() {
+    return this->remaning_watchable();
 }
 
 void LengthRecommenderUser::watch(Watchable *watched_content) {
@@ -158,6 +176,12 @@ void LengthRecommenderUser::watch(Watchable *watched_content) {
 
 RerunRecommenderUser *RerunRecommenderUser::clone() {
     return new RerunRecommenderUser(&this);
+}
+
+string RerunRecommenderUser::toString() {
+    string toReturn=this->getName();
+    toReturn.append(" rer")
+    return toReturn;
 }
 //endregion
 
@@ -232,5 +256,15 @@ RerunRecommenderUser *RerunRecommenderUser::clone() {
 GenreRecommenderUser *GenreRecommenderUser::clone() {
     return new GenreRecommenderUser(&this);
 
+}
+
+string GenreRecommenderUser::toString() {
+    string toReturn=this->getName();
+    toReturn.append(" gen")
+    return toReturn;
+}
+
+vector<Watchable *> GenreRecommenderUser::get_remaning_watchable() {
+    return this->remaning_watchable;
 }
 //endregion
