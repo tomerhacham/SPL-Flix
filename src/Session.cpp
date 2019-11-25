@@ -26,14 +26,15 @@ using namespace std;
             }
         }
     }
-
 }
     Session::Session(const Session &other) {
 
     }//TODO: implement this copy constructor
     Session::~Session() {
         delete this->activeUser;
+
         this->userMap.clear();
+
         for(int i=0;i<this->content.size();i++) {
             Watchable *cont = this->content.at(i);
             delete cont;
