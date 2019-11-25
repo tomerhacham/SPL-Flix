@@ -158,7 +158,6 @@ using namespace std;
 //endregion
 
 // region Watch
-    //Constructors:
 
     //Methods:
     void Watch::act(Session &sess)
@@ -168,18 +167,39 @@ using namespace std;
         int content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
         Watchable* toWatch= session.find_content_by_id();//TODO:implement find_content_by_id at session
-        session.get_active_user().watch //TODO:implement get_active_user at session
-
-
+        if(toWatch!=nullptr) {
+            session.get_active_user().watch //TODO:implement get_active_user at session
+            this->complete();
+        }
+        else{
+            this->error("Content ID did not found");
+        }
+        session.addAction(this);
     }
     string Watch::toString() const {}
 //endregion
 
 // region PrintActionsLog
-    //Constructors:
 
     //Methods:
-    void PrintActionsLog::act(Session &sess) {}
+    void PrintActionsLog::act(Session &sess) {
+        Session& session = sess;
+        vector<BaseAction*> all_action = session.get_actionlog();//TODO:implement getter for the action log
+        if(!all_action.empty()) {
+            for (int i = all_action.size() - 1; i >= 0; i--) {
+                ostringstream strout;
+                ActionStatus status = all_action.at(i)->getStatus();
+                strout << all_action.at(i)->toString() << " " << status;
+                if(status==ERROR){
+                    strout<<": "<<all_action.at(i)->getErrorMsg();
+                }
+                cout<<strout.str()<<endl;
+            }
+            this->complete();
+        }
+        else{this->error("Action Log is empty");}
+        session.addAction(this);
+    }
     string PrintActionsLog::toString() const {}
 //endregion
 
