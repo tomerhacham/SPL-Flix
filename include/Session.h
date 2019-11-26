@@ -17,16 +17,16 @@ public:
     ~Session();
     public: vector<string> get_parameters();
     public: vector<Watchable*> get_content();
-    public: Watchable* find_content_by_id(long):
+    public: Watchable* find_content_by_id(long);
     public: User* get_active_user();
     public: vector<BaseAction*> get_actionlog();
+    public: User* get_userbyName(string);
 
     void start();
     void addUser(User*);
     void addAction(BaseAction*);
-    void get_userbyName(string);
     void change_active_user (User*);
-    void parsing(string);
+    void parsing(string);// TODO: to send the first wort to command and the rest to parameters
     void delete_user(User*);
 
 private:
@@ -35,5 +35,6 @@ private:
     std::unordered_map<std::string,User*> userMap;
     User* activeUser;
     std::vector<string> parameters;
+    string command;// TODO: the first word in the string
 };
 #endif
