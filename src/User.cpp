@@ -8,13 +8,16 @@ using namespace std;
 
     //Constructors
     User::User(const string &name): name(name) {}//parameter constructor
-    User::User(const User& other): name(other.name)//copy constructor
+    User::User(const User& other): name(other.getName())//copy constructor
     {
         for(int i=0;i<other.history.size();i++){
             Watchable* watch = other.history.at(i);
             this->history.push_back(watch->clone());
         }
-
+    }
+    User::User(User &&other):name(other.getName(), history(other.get_history())) //Move constructor
+    {
+        other.history.clear();
     }
     User& User::operator=(const User &other) //copy assignment operator
     {
@@ -26,7 +29,8 @@ using namespace std;
             }
             history.clear();
             for(int i=0;i<other.get_history().size();i++){
-                history.push_back(other.get_history().at(i)->clone());
+                Watchable* watch = other.get_history().at(i);
+                history.push_back(watch->clone());
             }
         }
         return *this;
@@ -39,16 +43,18 @@ using namespace std;
                 delete *watch;
             }
             this->history=other.history;
+            other.history.clear();
         }
         return *this;
     }
     User::~User()//destructor
     {
-    for(int i=0;i<history.size();i++){
-        Watchable* watch = this->history.at(i);
-        delete *watch; //TODO: not sure if this is the right syntax
+        for(int i=0;i<history.size();i++){
+            Watchable* watch = this->history.at(i);
+            delete *watch;
      }
-    history.clear();
+        history.clear();
+        delete name;
     }
 
     //Methods:
@@ -62,42 +68,55 @@ using namespace std;
     }
 
 
+
+
 //endregion
 
 //region User - Length Recommender
 
     //Constructor:
-    LengthRecommenderUser::LengthRecommenderUser(const string &name):User(name){}
-    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {}
-    LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User(other), avgTime(other.avgTime)//Move constructor
+    LengthRecommenderUser::LengthRecommenderUser(const string &name):User(name) ,avgTime(0){}
+    LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {
+        for(int i=0;i<other.get_remaning_watchable().size();i++){
+            Watchable* watch = other.get_remaning_watchable().at();
+            remaning_watchable.push_back(watch->clone());
+        }
+    }
+    LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User(other&),remaning_watchable(other.get_remaning_watchable()), avgTime(other.avgTime)//Move constructor
     {
-    //TODO: do we need to clear the pointer of the vector?
+        other.remaning_watchable.clear();
     }
     LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other)//copy assignment operator
-            {
-                if(this!=&other){
-                    this.name=other.getName();
-                    this->avgTime=other.avgTime;
-                    for(int i=0;i<history.size();i++){
-                        Watchable* watch = history.at(i);
-                        delete *watch;
-                    }
-                    for(int i=0;i<remaning_watchable.size();i++){
-                        Watchable* watch = remaning_watchable.at(i);
-                        delete *watch;
-                    }
-                    history.clear();
-                    remaning_watchable.clear();
-
-                    for(int i=0;i<other.get_history().size();i++){
-                        history.push_back(other.get_history().at(i)->clone());
-                    }
-                    for(int i=0;i<other.get_remaning_watchable().size();i++){
-                        remaning_watchable.push_back(other.get_remaning_watchable().at(i)->clone());
-                    }
+    {
+        if(this!=&other){
+            this->setName(other.getName());
+            this->avgTime=other.avgTime
+            for(int i=0;i<history.size();i++){
+                Watchable* watch = history.at(i);
+                if(watch!= nullptr){
+                    delete *watch;
                 }
-                return *this;
             }
+            for(int i=0;i<remaning_watchable.size();i++){
+                Watchable* watch = remaning_watchable.at(i);
+                if(watch!=nullptr){
+                    delete *watch;
+                }
+            }
+            history.clear();
+            remaning_watchable.clear();
+
+            for(int i=0;i<other.get_history().size();i++){
+                Watchable* watch = ther.get_history().at(i);
+                history.push_back(watch->clone());
+            }
+            for(int i=0;i<other.get_remaning_watchable().size();i++){
+                Watchable* watch = other.get_remaning_watchable().at(i);
+                remaning_watchable.push_back(watch->clone());
+            }
+        }
+        return *this;
+     }
     LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other)//Move assingment operator
     {
         if(this!=&other){
@@ -120,19 +139,40 @@ using namespace std;
             remaning_watchable.clear();
             this.history = other.get_history();
             this->remaning_watchable = other.get_remaning_watchable();
+            other.history.clear();
+            other.remaning_watchable.clear();
         }
         return *this;
     }
+    LengthRecommenderUser::~LengthRecommenderUser() {
+        for(int i=0;i<history.size();i++) {
+            Watchable *watch = history.at(i);
+            if (watch != nullptr) {
+                delete *watch;
+            }
+        }
+        for(int i=0;i<remaning_watchable.size();i++) {
+            Watchable *watch = remaning_watchable.at(i);
+            if (watch != nullptr) {
+                delete *watch;
+            }
+        }
+        delete name;
+        delete avgTime;
+        delete history;
+        delete remaning_watchable;
+        }
 
     //Methods:
     ostream& operator << (ostream& os, const LengthRecommenderUser &user) {
         return (os << user.getName() << "\n Recommendation algo: len "<< endl);
     }
-    double LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
+    void LengthRecommenderUser::calculate_avg_time() //calculate the avg time that the user has been watched
     {
         double avg=0;
         for(int i=0;i<history.size();i++){
-            avg=avg+history.at(i)->get_length();
+            Watchable* watch = history.at(i);
+            avg=avg+watch->get_length();
         }
         this->avgTime=(avg/history.size());
     }
@@ -178,16 +218,57 @@ using namespace std;
         return this->remaning_watchable();
 }
     void LengthRecommenderUser::watch(Watchable *watched_content) {
-            this->history.push_back(watched_content);
+                this->history.push_back(watched_content);
 
-        }
+            }
 //endregion
 
 //region User - Rerun Recommender
 
     //Constructor
-    RerunRecommenderUser::RerunRecommenderUser(const string &name): User(name), index(0){}
-    RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser& other): User(other), index(other.index) {}
+    RerunRecommenderUser::RerunRecommenderUser(const string &name): User(name), index(0){}//parameter constructor
+    RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser& other): User(other), index(other.index) //copy constructor
+    {}
+    RerunRecommenderUser::RerunRecommenderUser(RerunRecommenderUser &&other):User(other&), index(other.index)//Move constructor
+    {}
+    RerunRecommenderUser &RerunRecommenderUser::operator=(const RerunRecommenderUser &other)//copy assignment operator
+    {
+        if(this!=&other){
+            this->setName(other.getName());
+            this->avgTime=other.get_index()
+            for(int i=0;i<history.size();i++){
+                Watchable* watch = history.at(i);
+                if(watch!= nullptr){
+                    delete *watch;
+                }
+            }
+            history.clear();
+
+            for(int i=0;i<other.get_history().size();i++){
+                Watchable* watch = ther.get_history().at(i);
+                history.push_back(watch->clone());
+            }
+        }
+        return *this;
+    }
+    RerunRecommenderUser &RerunRecommenderUser::operator=(RerunRecommenderUser &&other)//move assign operator
+    {
+        if(this!=&other){
+            this->setName(other.getName());
+            this->avgTime=other.get_index();
+            for(int i=0;i>history.size();i++){
+                Watchable* content this->history.at(i);
+                if(content!=nullptr){
+                    delete *content;
+                }
+            }
+
+            history.clear();
+            this.history = other.get_history();
+            other.history.clear();
+        }
+        return *this;
+    }
 
     //Methods
     ostream& operator << (ostream& os, const RerunRecommenderUser &user) {
@@ -203,37 +284,20 @@ using namespace std;
         }
         return nextContent;
     }
-
     RerunRecommenderUser *RerunRecommenderUser::clone() {
         return new RerunRecommenderUser(&this);
     }
-
     string RerunRecommenderUser::toString() {
         string toReturn=this->getName();
         toReturn.append(" rer")
         return toReturn;
     }
-    RerunRecommenderUser &RerunRecommenderUser::operator=(const RerunRecommenderUser &other)//copy assignment operator
-             {
-            //TODO:implement copy assignment
-    }
+    int RerunRecommenderUser::get_index() {
+        return this.index;
+}
 
-    RerunRecommenderUser &RerunRecommenderUser::operator=(RerunRecommenderUser &&other)//move assign operato
-    {
-     if(this!=&other){
-        this.name=other.getName();
-        this.index=other.index;
-         for(int i=0;i>history.size();i++){
-             Watchable* content this->history.at(i);
-             if(content!=nullptr){
-                 delete *content);
-             }
-         }
-         history.clear();
-         this->history=other.get_history();
-     }
-     return *this;
-    }
+
+
 //endregion
 
 //region User - Similar Genre
@@ -248,11 +312,91 @@ using namespace std;
         for(auto elem: other.remaning_watchable)
             this->remaning_watchable.push_back(elem->clone())
     }
-
-    //Methods:
-    ostream& operator << (ostream& os, const RerunRecommenderUser &user) {
-        return (os << user.getName() << "\n Recommendation algo: gen "<< endl);
+    GenreRecommenderUser::GenreRecommenderUser(GenreRecommenderUser &&other):User(other&),tags_freq(other.get_tags_freq()), remaning_watchable(other.get_remaning_watchable())//Move constructor
+    {
+        other.remaning_watchable.clear();
+        other.tags_freq.clear();
     }
+    GenreRecommenderUser &GenreRecommenderUser::operator=(const GenreRecommenderUser &other) //copy assignment operator
+    {
+        if(this!=&other){
+            this->setName(other.getName());
+
+            for(int i=0;i<history.size();i++){
+                Watchable* watch = history.at(i);
+                if(watch!= nullptr){
+                    delete *watch;
+                }
+            }
+            for(int i=0;i<remaning_watchable.size();i++){
+                Watchable* watch = remaning_watchable.at(i);
+                if(watch!=nullptr){
+                    delete *watch;
+                }
+            }
+
+            history.clear();
+            remaning_watchable.clear();
+            tags_freq.clear();
+
+            for(int i=0;i<other.get_history().size();i++){
+                Watchable* watch = ther.get_history().at(i);
+                history.push_back(watch->clone());
+            }
+            for(int i=0;i<other.get_remaning_watchable().size();i++){
+                Watchable* watch = other.get_remaning_watchable().at(i);
+                remaning_watchable.push_back(watch->clone());
+            }
+            for(auto elem : other.get_tags_freq()){
+                this->tags_freq.insert(elem);
+            }
+        }
+        return *this;
+    }
+    GenreRecommenderUser &GenreRecommenderUser::operator=(GenreRecommenderUser &&other) //move assign operator
+    {
+        if (this != &other) {
+            this.name = other.getName();
+            for (int i = 0; i > history.size(); i++) {
+                Watchable *content
+                this->history.at(i);
+                if (content != nullptr) {
+                    delete *content;
+                }
+            }
+            for (int i = 0; i < remaning_watchable.size(); i++) {
+                Watchable *content
+                this->remaning_watchable.at(i);
+                if (content != nullptr) {
+                    delete *content;
+                }
+            }
+            this->tags_freq.clear()
+            this->history.clear();
+            this->remaning_watchable.clear();
+            this->tags_freq=other.get_tags_freq();
+
+        }
+        return *this;
+    }
+    GenreRecommenderUser::~GenreRecommenderUser() {
+    for(auto elem : remaning_watchable){
+        delete *elem;
+    }
+    for(auto elem: history){
+        delete *elem;
+    }
+    for(auto elem : tags_freq){
+        delete *elem;
+    }
+    this->history.clear();
+    this->tags_freq.clear();
+    this->remaning_watchable.clear();
+
+}
+
+//Methods:
+
     void GenreRecommenderUser::add_tag_freq(const string &tag)
     {
         this->tags_freq[tag]++
@@ -303,7 +447,6 @@ using namespace std;
         }
         return nextContent;
     }
-
     GenreRecommenderUser *GenreRecommenderUser::clone() {
         return new GenreRecommenderUser(&this);
 
@@ -313,43 +456,15 @@ using namespace std;
         toReturn.append(" gen")
         return toReturn;
     }
-
     vector<Watchable *> GenreRecommenderUser::get_remaning_watchable() {
         return this->remaning_watchable;
     }
-
-    GenreRecommenderUser &GenreRecommenderUser::operator=(GenreRecommenderUser &&other) //move assign operator
-    {
-        if (this != &other) {
-            this.name = other.getName();
-            for (int i = 0; i > history.size(); i++) {
-                Watchable *content
-                this->history.at(i);
-                if (content != nullptr) {
-                    delete *content;
-                }
-            }
-            for (int i = 0; i < remaning_watchable.size(); i++) {
-                Watchable *content
-                this->remaning_watchable.at(i);
-                if (content != nullptr) {
-                    delete *content;
-                }
-            }
-            this->tags_freq.clear()
-            this->history.clear();
-            this->remaning_watchable.clear();
-            this->tags_freq=other.get_tags_freq();
-
-        }
-        return *this;
-    }
-
     unordered_map<string, int> GenreRecommenderUser::get_tags_freq() {
         return this->tags_freq;
     }
-
-GenreRecommenderUser &GenreRecommenderUser::operator=(const GenreRecommenderUser &other) {
-    //TODO: implement the copy assignment operator
+    ostream& operator << (ostream& os, const GenreRecommenderUser &user) {
+    return (os << user.getName() << "\n Recommendation algo: gen "<< endl);
 }
+
+
 //endregion
