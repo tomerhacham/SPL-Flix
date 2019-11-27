@@ -280,7 +280,7 @@ using namespace std;
             for(auto watchable:other.get_remaning_watchable()){
                 vector<Watchable*> new_remaning;
                 new_remaning.push_back(watchable);
-                this->set_remaning_watchable(new_remaning);
+                //this->set_remaning_watchable(new_remaning);
             }
             for(auto elem : other.tags_freq)
                 this->tags_freq.insert(pair<string,int>(elem.first,elem.second));
@@ -299,7 +299,7 @@ using namespace std;
             for(auto watchable:other.get_remaning_watchable()) {
                 new_remaning.push_back(watchable);
             }
-            this->set_remaning_watchable(new_remaning);
+            //this->set_remaning_watchable(new_remaning);
             for(auto elem : other.tags_freq)
                 this->tags_freq.insert(pair<string,int>(elem.first,elem.second));
 

@@ -18,7 +18,6 @@ public:
 	ActionStatus getStatus() const;
 	virtual void act(Session& sess)=0;
 	virtual std::string toString() const=0;
-    virtual ~BaseAction();
     void complete();
     void error(const string& errorMsg);
     string getErrorMsg() const;
@@ -32,7 +31,6 @@ private:
 
 class CreateUser  : public BaseAction {
 public:
-    virtual ~CreateUser();
     bool is_valid_algorithm(string parameter);
     virtual void act(Session& sess);
 	virtual string toString() const;
