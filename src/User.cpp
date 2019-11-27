@@ -22,7 +22,7 @@ using namespace std;
     User& User::operator=(const User &other) //copy assignment operator
     {
         if(this!=&other){
-            this.name=other.getName();
+            this->name=other.getName();
             for(int i=0;i<history.size();i++){
                 Watchable* watch = history.at(i);
                 delete *watch;
@@ -63,11 +63,10 @@ using namespace std;
     void User::setName(string name) {
         this->name=name;
     }
-    void User::watch(Watchable *watched_content) {
-            this->history.push_back(watched_content);
-    }
 
-
+void User::watch(Watchable *watched_content, Session &sess) {
+    this->history.push_back(watched_content);
+}
 
 
 //endregion
@@ -193,14 +192,15 @@ using namespace std;
     {
         Session* session = &s;
         Watchable* nextContent= nullptr;
-        set_remaning_watchable(session.get_content())
+        //set_remaning_watchable(session.get_content())
 
         if(!this->remaning_watchable.empty()){
             double timedif=abs(this->remaning_watchable.front()->get_length()- avgTime);
             for(int i=0;i<remaning_content.size();i++){
-                if((abs(remaning_content.at(i)-this->avgTime))<timedif){
-                    timedif = abs(remaning_content.at(i)-this->avgTime);
-                    nextContent=remaning_content.at(i);
+                Watchable* content = remaning_content.at(i);
+                if((abs(content->get_length()-this->avgTime))<timedif){
+                    timedif = abs(content->get_length()-this->avgTime);
+                    nextContent=content;
                 }
             }
         }
@@ -217,10 +217,21 @@ using namespace std;
     vector<Watchable *> LengthRecommenderUser::get_remaning_watchable() {
         return this->remaning_watchable();
 }
-    void LengthRecommenderUser::watch(Watchable *watched_content) {
-                this->history.push_back(watched_content);
-
+    void LengthRecommenderUser::watch(Watchable *watched_content)
+    {
+        int index=0;
+        bool found=false;
+        this->history.push_back(watched_content);
+        vector<Watchable*>& remaning = get_remaning_watchable();
+        for(int i=0;!found && i<remaning.size();i++){
+            if(remaning.at(i)->get_id()==watched_content->get_id()){
+                index=i;
+                found=true;
             }
+        }
+        remaning.erase(index);
+
+    }
 //endregion
 
 //region User - Rerun Recommender
@@ -279,8 +290,8 @@ using namespace std;
         Watchable* nextContent= nullptr;
         if(!this->history.empty())
         {
-            nextContent = this->history.at(index);
             index = (index+1)%this->history.size();
+            nextContent = this->history.at(index);
         }
         return nextContent;
     }
@@ -420,31 +431,39 @@ using namespace std;
         string most_popular_tag;
         Watchable* nextContent=nullptr;
 
-        //finding the most popular tags among the hash map elements
-        unordered_map<string, int>:: iterator iter;
-        for (iter = this->tags_freq.begin(); iter != this->tags_freq.end(); iter++) {
-            cout << "(" << iter->first << ", " << iter->second << ")\n";
-            if(iter->second >=freq){
-                if(iter->second==freq){
-                    most_popular_tag=max(most_popular_tag,iter->first);
-                }
-                if(iter->second>freq){
-                    freq=iter->second;
-                    most_popular_tag=iter->first;
-                }
+        set<pair<string, int>> sort_tags = sort_tags(); //tags sorts in descending order by the second value first(freq) and if equal so by lexicographic order
+
+        for (pair<string, int> tag : sort_tags){
+            cout << tag.first << " :: " << tag.second << endl;//for debugging
+            if(nextContent==nullptr){
+                nextContent = get_content_by_tag(tag.first);
             }
         }
-        //find the first watchable at remaining content which contains the most popular tag
+
+        /* map<string, int>:: iterator iter;
+         for (iter = this->tags_freq.begin(); iter != this->tags_freq.end(); iter++) {
+             cout << "(" << iter->first << ", " << iter->second << ")\n";
+             if(iter->second >=freq){
+                 if(iter->second==freq){
+                     most_popular_tag=max(most_popular_tag,iter->first);
+                 }
+                 if(iter->second>freq){
+                     freq=iter->second;
+                     most_popular_tag=iter->first;
+                 }
+             }
+
+
         for(int i=0;nextContent== nullptr && i<remaning_watchable.size();i++){
 
             vector<srting> watchable_tags = remaning_watchable.at(i).get_tags();
             if(find(watchable_tags.begin(), watchable_tags.end(), most_popular_tag) != watchable_tags.end()) {
                 /* watchable_tags contains most_popular_tag */
-                nextContent=remaning_watchable.at(i)
+              /*  nextContent=remaning_watchable.at(i)
             } else {
                 /* watchable_tags does not contain most_popular_tag */
-            }
-        }
+        //    }
+        //}
         return nextContent;
     }
     GenreRecommenderUser *GenreRecommenderUser::clone() {
@@ -464,6 +483,53 @@ using namespace std;
     }
     ostream& operator << (ostream& os, const GenreRecommenderUser &user) {
     return (os << user.getName() << "\n Recommendation algo: gen "<< endl);
+}
+
+set<pair<string, int>> GenreRecommenderUser::sort_tags() {
+
+    // Declaring the type of Predicate that accepts 2 pairs and return a boolean
+    typedef function<bool(pair<string, int>, pair<string, int>)> Comparator;
+
+    // Defining a lambda function to compare two pairs. It will compare two pairs using second field
+    Comparator compFunctor =
+            [](pair<string, int> elem1 ,pair<string, int> elem2)
+            {bool toreturn;
+                if(elem1.second>elem2.second)
+                {
+                    toreturn=true;
+                }
+                else if(elem1.second<elem2.second)
+                {
+                    toreturn=false;
+                }
+                else if(elem1.second==elem2.second)
+                {
+                    if(elem1.first>elem2.first){
+                        toreturn=true;
+                    }
+                    else if(elem1.first<elem2.first){
+                        toreturn=false;
+                    }
+                }
+                return toreturn;
+            };
+
+    // Declaring a set that will store the pairs using above comparision logic
+    set<pair<string, int>, Comparator> sortedSet(
+            tags_freq.begin(), tags_freq.end(), compFunctor);
+
+    return sortedSet;
+}
+
+Watchable *GenreRecommenderUser::get_content_by_tag(string tag) {
+    for(auto watchable : this->remaning_watchable){
+        for(auto watchableTag: watchable->get_tags()){
+            if(watchableTag==tag){
+                return watchable;
+            }
+        }
+    }
+    return nullptr;
 }
 
 

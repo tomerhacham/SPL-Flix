@@ -41,7 +41,7 @@ using namespace std;
     //Methods:
     void CreateUser::act(Session &sess) {
         Session &session = sess;
-        vector<string>& parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
         string username = parameters.at(0);
         string algorithm = parameters.at(1);//TODO: needs to check if there is another user with this name
         if(is_valid_algorithm(algorithm)){
@@ -191,12 +191,13 @@ using namespace std;
     void Watch::act(Session &sess)
     {
         Session& session = sess;
-        stringstream stm(session.get_parameters().at(1));
+        stringstream stm(session.get_parameters().at(0));
         long content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
         Watchable* toWatch= session.find_content_by_id(content_id);//TODO:implement find_content_by_id at session
         if(toWatch!=nullptr) {
-            session.get_active_user().watch //TODO:implement get_active_user at session
+            User* activeuser = session.get_active_user();
+            activeuser->watch(toWatch,sess); //TODO:implement get_active_user at session
             this->complete();
         }
         else{

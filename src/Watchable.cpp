@@ -1,6 +1,7 @@
-#include "include/Watchable.h"
+#include <include/Watchable.h>
 #include  <sstream>
-
+#include <include/User.h>
+#include <include/Session.h>
 using namespace std;
 
 //region Watchable - abstract
@@ -32,7 +33,7 @@ using namespace std;
 //region Movie
 
     //Constructors
-    Movie::Movie(long id, const std::string &name, int length, const vector<string> &tags): Watchable(id,length,tags), name(name) {}
+    Movie::Movie(long id, const string &name, int length, const vector<string> &tags): Watchable(id,length,tags), name(name) {}
     Movie::Movie(const Movie &other):Watchable(other), name(other.name) {}
     Movie::Movie(Movie &&other):Watchable(other&) ,name(other.name)
     {
@@ -46,7 +47,7 @@ using namespace std;
     string Movie::get_name() {return this->name;}
     string Movie::toString() const {
         string toReturn="";
-        toReturn.append(reinterpret_cast<const char *>(this->get_id()));
+        //toReturn.append(reinterpret_cast<const char *>(this->get_id()));
         toReturn.append(name);
         toReturn.append(reinterpret_cast<const char *>(this->get_length()));
         toReturn.append("minutes");
@@ -55,7 +56,12 @@ using namespace std;
         return toReturn;
 
     }
-    Watchable* Movie::getNextWatchable(Session &) const {}
+    Watchable* Movie::getNextWatchable(Session &s) const
+    {
+        Session* session = &s;
+        User* activeUser = session->get_active_user();
+        return activeUser->getRecommendation(s);
+    }
 
 //endregion
 
@@ -73,11 +79,30 @@ using namespace std;
         return new Episode(*this);
     }
     string Episode::toString() const {
-        ostringstream strout;
-        strout<<to_string(this->get_id())<<". " << this->get_seriesName() << " S"<<to_string(this->get_season()) <<"E"<<to_string(this->get_episode())<<" " <<this->get_length()<<" minutes";
-        return strout.str().append(this->concat_tags());
+        string toReturn="";
+        string s= reinterpret_cast<const char *>(this->get_season());
+        string e = reinterpret_cast<const char *>(this->get_episode());
+        string length = reinterpret_cast<const char *>(this->get_length());
+        toReturn.append(seriesName);
+        toReturn.append("S"+s+"E"+e);
+        toReturn.append(length);
+        toReturn.append("minutes");
+        toReturn.append(this->concat_tags());
     }
-    Watchable* Episode::getNextWatchable(Session &) const {}//TODO:implement
+    Watchable* Episode::getNextWatchable(Session& s) const
+    {
+        Session* session = &s;
+        Watchable* toReturn;
+        if(this->nextEpisodeId!=-1){
+            toReturn = session->find_content_by_id(this->nextEpisodeId);
+        }
+        else{
+            User* activeUser = session->get_active_user();
+            toReturn = activeUser->getRecommendation(s);
+        }
+        return toReturn;
+
+    }
     const string Episode::get_seriesName() const {return this->seriesName;}
     int Episode::get_episode() const {return this->episode;}
     int Episode::get_season() const {return this->season;}
