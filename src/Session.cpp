@@ -9,7 +9,7 @@ using namespace std;
     Session::Session(const string &configFilePath) {
     using json= nlohmann::json;
     ifstream i(configFilePath);
-    json* inf;
+    json inf;
     i >> inf;
     cout << inf << endl;
 
