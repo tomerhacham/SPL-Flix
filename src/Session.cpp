@@ -7,7 +7,7 @@
 using namespace std;
 //Constructors
     Session::Session(const string &configFilePath) {
-    using json= nlohamann::json;
+    using json= nlohmann::json;
     ifstream i(configFilePath);
     json* inf;
     i >> inf;
@@ -26,7 +26,7 @@ using namespace std;
                 id++
             }
             int n= content.size();
-            content(n).id =-1
+            content(n).id =-1;
 
         }
     }
