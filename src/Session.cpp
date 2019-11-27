@@ -26,8 +26,8 @@ using namespace std;
                 id++
             }
             int n= content.size();
-            content(n).id= -1;
-            //TODO: to check how i get the last cell in vector to change the field next id to -1
+            content(n).id =-1
+
         }
     }
 }//TODO: to check if it works
