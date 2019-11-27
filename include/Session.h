@@ -28,7 +28,7 @@ public:
     void change_active_user (User*);
     void parsing(string);
     void delete_user(User*);
-    void exit();
+    void Exit();
 
 private:
     std::vector<Watchable*> content;

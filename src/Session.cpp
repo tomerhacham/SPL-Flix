@@ -6,7 +6,7 @@
 
 using namespace std;
 //Constructors
-    Session::Session(const string &configFilePath):exit(false) {
+    Session::Session(const string &configFilePath) {
     using json= nlohamann::json;
     ifstream i(configFilePath);
     json* inf;
@@ -92,13 +92,63 @@ public:
     }
 
     void Session::start() {
+        exit = false;
         cout << "SPLFLIX is now on!”" << endl;
-        while (!exit){
+        while (!exit) {
+            string input;
+            cin >> input;
+            parsing(input);
+
+            if (command == "createuser") {
+                CreateUser cu = new CreateUser();
+                cu.act(&this);
+            }
+
+            if (command == "changeuser") {
+                ChangeActiveUser cat = new ChangeActiveUser();
+                cat.act(&this);
+            }
+
+            if (command == "deleteuser") {
+                DeleteUser du = new DeleteUser();
+                du.act(&this);
+            }
+
+            if (command == "dupuser") {
+                DuplicateUser dpu = new DuplicateUser():
+                dpu.act(&this);
+            }
+
+            if (command == "content") {
+
+            }
+
+            if (command == "watchhist") {
+
+            }
+
+            if (command == "watch") {
+                Watch wat = new Watch();
+                wat.act(&this);
+            }
+
+            if (command == "log") {
+                PrintActionsLog pal = new PrintActionsLog();
+                pal.act(&this);
+            }
+
+            if (command == "exit") {
+                Exit ext = new Exit();
+                exit.act(&this);
+            }
+        }
+
+
 
 
 
         }
-    }//TODO: to print:"spl...." and create default user
+    }
     void Session::addUser(User* user) {
         userMap.insert(user->getName(), user);
     }
@@ -122,7 +172,7 @@ public:
         userMap.erase(user);
         delete user;
     }
-    void Session::exit() {
+    void Session::Exit() {
         this->exit=true;
     }
 
