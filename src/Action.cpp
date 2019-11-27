@@ -246,7 +246,7 @@ using namespace std;
     void Exit::act(Session &sess)
     {
         Session* session = &sess;
-        session->exit();
+        session->Exit();
 
     }
     string Exit::toString() const {
