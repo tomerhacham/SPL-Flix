@@ -108,7 +108,9 @@ using namespace std;
     int Episode::get_season() const {return this->season;}
     long Episode::get_next_EpisodeId() { return this->nextEpisodeId;}
 
-;
+void Episode::set_nextID(long nextID) {
+    this->nextEpisodeId=nextID;
+};
 
 
 //endregion

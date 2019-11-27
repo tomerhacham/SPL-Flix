@@ -53,6 +53,7 @@ public:
     int get_season() const;
     int get_episode() const;
     long get_next_EpisodeId();
+    void set_nextID(long nextID);
 
 private:
     string seriesName;
