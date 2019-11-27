@@ -43,8 +43,8 @@ using namespace std;
         Session* session = &sess;
         vector<string> parameters = session->get_parameters();
         string username = parameters.at(0);
-        string algorithm = parameters.at(1);//TODO: needs to check if there is another user with this name
-        if(is_valid_algorithm(algorithm)){
+        string algorithm = parameters.at(1);
+        if(is_valid_algorithm(algorithm) && session->get_userbyName(username)==nullptr){
             User* new_user;
             if (algorithm == "len") {
                 new_user = new LengthRecommenderUser(username);
@@ -88,9 +88,9 @@ using namespace std;
         Session& session = sess;
         vector<string> parameters = session.get_parameters();
         string username = parameters.at(0);
-        User* user = session.get_userbyName(username);//TODO: implement get_userByname at session return nullptr if not found
+        User* user = session.get_userbyName(username);
         if(user!=nullptr) {
-            session.change_active_user(user);//TODO: implement change_active_user at session
+            session.change_active_user(user);
             this->complete();
         }
         else{
