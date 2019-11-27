@@ -3,9 +3,10 @@
 #include <fstream>
 #include <iostream>
 #include <Watchable.h>
+
 using namespace std;
 //Constructors
-    Session::Session(const string &configFilePath) {
+    Session::Session(const string &configFilePath):exit(false) {
     using json= nlohamann::json;
     ifstream i(configFilePath);
     json* inf;
@@ -24,6 +25,8 @@ using namespace std;
                 content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"]);
                 id++
             }
+            int n= content.size();
+            content(n).id= -1;
             //TODO: to check how i get the last cell in vector to change the field next id to -1
         }
     }
@@ -89,8 +92,10 @@ public:
     }
 
     void Session::start() {
-        bool exit= false;
+        cout << "SPLFLIX is now on!”" << endl;
         while (!exit){
+
+
 
         }
     }//TODO: to print:"spl...." and create default user
@@ -109,12 +114,16 @@ public:
         istream_iterator<string> begin(ss);
         istream_iterator<string> end;
         vector<string> parameters(begin, end);
-        copy(parameters.begin(), parameters.end(), ostream_iterator<string>);
         this->parameters= parameters;
+        command= this->parameters.at(0);
+        this->parameters.erase(0);
     }
     void Session::delete_user(User * user) {
         userMap.erase(user);
         delete user;
+    }
+    void Session::exit() {
+        this->exit=true;
     }
 
 

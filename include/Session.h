@@ -26,8 +26,9 @@ public:
     void addUser(User*);
     void addAction(BaseAction*);
     void change_active_user (User*);
-    void parsing(string);// TODO: to send the first wort to command and the rest to parameters
+    void parsing(string);
     void delete_user(User*);
+    void exit();
 
 private:
     std::vector<Watchable*> content;
@@ -35,6 +36,7 @@ private:
     std::unordered_map<std::string,User*> userMap;
     User* activeUser;
     std::vector<string> parameters;
-    string command;// TODO: the first word in the string
+    string command;
+    bool exit;
 };
 #endif
