@@ -40,26 +40,28 @@ using namespace std;
 
     //Methods:
     void CreateUser::act(Session &sess) {
-        Session &session = sess;
-        vector<string> parameters = session.get_parameters();
+        Session* session = &sess;
+        vector<string> parameters = session->get_parameters();
         string username = parameters.at(0);
         string algorithm = parameters.at(1);//TODO: needs to check if there is another user with this name
         if(is_valid_algorithm(algorithm)){
             User* new_user;
             if (algorithm == "len") {
                 new_user = new LengthRecommenderUser(username);
+                new_user->set_remaning_watchable(session->get_content());
             } else if (algorithm == "rer") {
                 new_user = new RerunRecommenderUser(username);
             } else if (algorithm == "gen") {
                 new_user = new GenreRecommenderUser(username);
+                new_user->set_remaning_watchable(session->get_content());
             }
-            session.addUser(new_user);
+            session->addUser(new_user);
             this->complete();
         }
         else{
             this->error("Invalid Algorithm");
         }
-        session.addAction(this);
+        session->addAction(this);
 
     }
         string CreateUser::toString() const
@@ -201,9 +203,8 @@ using namespace std;
         session->addAction(this);
     }
     string Watch::toString() const {
-        string toReturn="Watch ";
+        string toReturn="Watch";
         toReturn.append((const char*) this->getStatus());
-        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
@@ -234,9 +235,18 @@ using namespace std;
 //endregion
 
 // region Exit
-    //Constructors:
 
     //Methods:
-    void Exit::act(Session &sess) {}
-    std::string Exit::toString() const {}
+    void Exit::act(Session &sess)
+    {
+        Session* session = &sess;
+        session->exit();
+
+    }
+    string Exit::toString() const {
+        string toReturn="Exit";
+        toReturn.append((const char*) this->getStatus());
+        toReturn.append(this->getErrorMsg());
+        return toReturn;
+    }
 //endregion

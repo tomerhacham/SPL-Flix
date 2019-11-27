@@ -48,7 +48,6 @@ public:
     virtual Watchable* getRecommendation(Session& s);
     virtual string toString();
     virtual LengthRecommenderUser* clone();
-    virtual void watch(Watchable* watched_content,Session &sess);
     void calculate_avg_time();
 
 private:
@@ -79,13 +78,13 @@ public:
     GenreRecommenderUser& operator=(const GenreRecommenderUser& other); //copy assignment operator
     GenreRecommenderUser& operator=(GenreRecommenderUser&& other); //move assign operator
     ~GenreRecommenderUser();
+    virtual void watch(Watchable* watched_content,Session &sess);
     virtual Watchable* getRecommendation(Session& s);
-    void add_tag_freq(const string& tag);
+    void add_tag_freq(vector<string> tags);
     void set_remaning_watchable(vector<Watchable*> all_content);
     vector<pair<string,int>> sort_tags();
     virtual GenreRecommenderUser* clone();
     virtual string toString();
-    virtual void watch(Watchable* watched_content,Session &sess);
     Watchable* get_content_by_tag(string tag);
     virtual void clear();
     map<string, int> get_tags_freq();

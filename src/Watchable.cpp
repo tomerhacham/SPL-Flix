@@ -35,7 +35,7 @@ using namespace std;
     //Constructors
     Movie::Movie(long id, const string &name, int length, const vector<string> &tags): Watchable(id,length,tags), name(name) {}
     Movie::Movie(const Movie &other):Watchable(other), name(other.name) {}
-    Movie::Movie(Movie &&other):Watchable(other&) ,name(other.name)
+    Movie::Movie(Movie &&other):Watchable(other) ,name(other.name)
     {
         other.get_tags().clear();
     }
@@ -71,7 +71,7 @@ using namespace std;
     Episode::Episode(long id, const string &seriesName, int length, int season, int episode,
                      const vector<string> &tags,long nextEpisodeId ):Watchable(id,length,tags), seriesName(seriesName), season(season), episode(episode), nextEpisodeId(nextEpisodeId) { }
     Episode::Episode(const Episode &other) : Watchable(other), seriesName(other.seriesName), season(other.season), episode(other.episode),nextEpisodeId(other.nextEpisodeId){}
-    Episode::Episode(Episode &&other):Watchable(other&),seriesName(other.get_seriesName()), season(other.get_season()),episode(other.get_episode()), nextEpisodeId(other.get_next_EpisodeId()){
+    Episode::Episode(Episode &&other):Watchable(other),seriesName(other.get_seriesName()), season(other.get_season()),episode(other.get_episode()), nextEpisodeId(other.get_next_EpisodeId()){
     }
     //Methods:
     Episode* Episode::clone()

@@ -69,7 +69,19 @@ using namespace std;
         this->name=name;
     }
     void User::watch(Watchable *watched_content, Session &sess) {
-        this->history.push_back(watched_content);
+            int index=0;
+            bool found=false;
+            this->history.push_back(watched_content);
+            vector<Watchable*> remaning = get_remaning_watchable();
+            if(!remaning.empty()) {
+                for (int i = 0; !found && i < remaning.size(); i++) {
+                    if (remaning.at(i)->get_id() == watched_content->get_id()) {
+                        index = i;
+                        found = true;
+                    }
+                }
+                remaning.erase(remaning.begin() + index);
+            }
     }
     vector<Watchable *> User::get_remaning_watchable() const {
         return remaning_watchable;
@@ -147,7 +159,7 @@ using namespace std;
         Session* session = &s;
         Watchable* nextContent= nullptr;
         vector<Watchable*> remaning = this->get_remaning_watchable();
-
+        this->calculate_avg_time();
         if(!remaning.empty()){
             double timedif=abs(remaning.front()->get_length()- avgTime);
             for(int i=0;i<remaning.size();i++){
@@ -168,21 +180,6 @@ using namespace std;
         toReturn.append("len");
         return toReturn;
 }
-    void LengthRecommenderUser::watch(Watchable *watched_content,Session &sess)
-    {
-        int index=0;
-        bool found=false;
-        this->history.push_back(watched_content);
-        vector<Watchable*> remaning = get_remaning_watchable();
-        for(int i=0;!found && i<remaning.size();i++){
-            if(remaning.at(i)->get_id()==watched_content->get_id()){
-                index=i;
-                found=true;
-            }
-        }
-        remaning.erase(remaning.begin()+index);
-
-    }
 //endregion
 
 //region User - Rerun Recommender
@@ -316,9 +313,12 @@ using namespace std;
 
 //Methods:
 
-    void GenreRecommenderUser::add_tag_freq(const string &tag)
+    void GenreRecommenderUser::add_tag_freq(vector<string> tags)
     {
-        this->tags_freq[tag]++;
+        for(auto tag:tags){
+            this->tags_freq[tag]++;
+
+        }
     }
     Watchable* GenreRecommenderUser::getRecommendation(Session &s)
     {
@@ -398,6 +398,10 @@ using namespace std;
     void GenreRecommenderUser::clear() {
         User::clear();
         this->tags_freq.clear();
+    }
+    void GenreRecommenderUser::watch(Watchable *watched_content, Session &sess) {
+        this->add_tag_freq(watched_content->get_tags());
+        User::watch(watched_content, sess);
     }
 
 
