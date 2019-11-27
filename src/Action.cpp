@@ -162,20 +162,26 @@ using namespace std;
     }
 //endregion
 
-// region PrintWatchHistory
+// region PrintContentList
     //Constructors:
 
     //Methods:
-    void PrintWatchHistory::act(Session &sess) {
+    void PrintContentList::act(Session &sess) {
         Session* session = &sess;
 
         vector<Watchable *> content = session->get_content();
+        if(!content.empty()){
         for(int i=0; i<content.size();i++){
             cout<<content.at(i)->toString();
         }
+        this->complete();
     }
-    string PrintWatchHistory::toString() const {
-            string toReturn="PrintWatchHistory";
+        else{
+            this->error("Content is Empty");
+        }
+    }
+    string PrintContentList::toString() const {
+            string toReturn="PrintContentList";
             toReturn.append((const char*) this->getStatus());
             toReturn.append(this->getErrorMsg());
             return toReturn;
@@ -250,3 +256,26 @@ using namespace std;
         return toReturn;
     }
 //endregion
+
+//region PrintWatchHistory
+void PrintWatchHistory::act(Session &sess) {
+    Session* session = &sess;
+    vector<Watchable *> content = session->get_active_user()->get_history();
+    if(!content.empty()){
+        for(int i=0; i<content.size();i++){
+            cout<<content.at(i)->toString();
+            this->complete();
+        }
+    }
+    else{
+        this->error("History is empty");
+    }
+}
+string PrintWatchHistory::toString() const {
+    string toReturn="PrintWatchHistory";
+    toReturn.append((const char*) this->getStatus());
+    toReturn.append(this->getErrorMsg());
+    return toReturn;
+}
+//endregion
+
