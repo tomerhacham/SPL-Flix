@@ -41,7 +41,7 @@ using namespace std;
     //Methods:
     void CreateUser::act(Session &sess) {
         Session &session = sess;
-        vector<string> parameters = session.get_parameters(); //TODO:implement get_param method
+        vector<string> parameters = session.get_parameters();
         string username = parameters.at(0);
         string algorithm = parameters.at(1);//TODO: needs to check if there is another user with this name
         if(is_valid_algorithm(algorithm)){
@@ -57,16 +57,15 @@ using namespace std;
             this->complete();
         }
         else{
-            this->error("Invalid Algorithem");
+            this->error("Invalid Algorithm");
         }
         session.addAction(this);
 
     }
         string CreateUser::toString() const
         {
-            string toReturn="CreateUser ";
+            string toReturn="CreateUser";
             toReturn.append((const char*) this->getStatus());
-            toReturn.append(" ");
             toReturn.append(this->getErrorMsg());
             return toReturn;
         }
@@ -99,9 +98,8 @@ using namespace std;
 
     }
     string ChangeActiveUser::toString() const {
-        string toReturn="ChangeActiveUser ";
+        string toReturn="ChangeActiveUser";
         toReturn.append((const char*) this->getStatus());
-        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
@@ -112,23 +110,22 @@ using namespace std;
 
     //Methods:
     void DeleteUser::act(Session &sess) {
-        Session& session = sess;
-        vector<string> parameters = session.get_parameters();
+        Session* session = &sess;
+        vector<string> parameters = session->get_parameters();
         string username = parameters.at(0);
-        User* user = session.get_userbyName(username);
+        User* user = session->get_userbyName(username);
         if(user!= nullptr){
-            session.delete_user(user);//TODO: implement delete_user at session
+            session->delete_user(user);
             this->complete();
         }
         else{
             this->error("Error at Delete User");
         }
-        session.addAction(this);
+        session->addAction(this);
     }
     string DeleteUser::toString() const {
-        string toReturn="DeleteUser ";
+        string toReturn="DeleteUser";
         toReturn.append((const char*) this->getStatus());
-        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
@@ -140,25 +137,24 @@ using namespace std;
     //Methods:
     void DuplicateUser::act(Session &sess)
     {
-        Session& session = sess;
-        vector<string> parameters = session.get_parameters();
+        Session* session = &sess;
+        vector<string> parameters = session->get_parameters();
         string username = parameters.at(0);
         string new_username = parameters.at(1);
-        User* user = session.get_userbyName(username);
+        User* user = session->get_userbyName(username);
         if(username==new_username){
-            this->error("Duplicate user with the same Username");
+            this->error("Duplicate user with the same username");
         }
         else if(user!= nullptr){
             User* duplicate_user =user->clone();
             duplicate_user->setName(new_username);
-            session.addUser(duplicate_user);
+            session->addUser(duplicate_user);
             this->complete();
         }
     }
-    string PrintContentList::toString() const {
-        string toReturn="PrintContentList ";
+    string DuplicateUser::toString() const {
+        string toReturn="DuplicateUser";
         toReturn.append((const char*) this->getStatus());
-        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
@@ -169,17 +165,16 @@ using namespace std;
 
     //Methods:
     void PrintWatchHistory::act(Session &sess) {
-        Session& session = sess;
+        Session* session = &sess;
 
-        vector<Watchable *> content = session.get_content();
+        vector<Watchable *> content = session->get_content();
         for(int i=0; i<content.size();i++){
             cout<<content.at(i)->toString();
         }
     }
     string PrintWatchHistory::toString() const {
-            string toReturn="PrintWatchHistory ";
+            string toReturn="PrintWatchHistory";
             toReturn.append((const char*) this->getStatus());
-            toReturn.append(" ");
             toReturn.append(this->getErrorMsg());
             return toReturn;
     }
@@ -190,20 +185,20 @@ using namespace std;
     //Methods:
     void Watch::act(Session &sess)
     {
-        Session& session = sess;
-        stringstream stm(session.get_parameters().at(0));
+        Session* session = &sess;
+        stringstream stm(session->get_parameters().at(0));
         long content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
-        Watchable* toWatch= session.find_content_by_id(content_id);//TODO:implement find_content_by_id at session
+        Watchable* toWatch= session->find_content_by_id(content_id);
         if(toWatch!=nullptr) {
-            User* activeuser = session.get_active_user();
-            activeuser->watch(toWatch,sess); //TODO:implement get_active_user at session
+            User* activeuser = session->get_active_user();
+            activeuser->watch(toWatch,sess);
             this->complete();
         }
         else{
             this->error("Content ID did not found");
         }
-        session.addAction(this);
+        session->addAction(this);
     }
     string Watch::toString() const {
         string toReturn="Watch ";
@@ -219,8 +214,8 @@ using namespace std;
 
     //Methods:
     void PrintActionsLog::act(Session &sess) {
-        Session& session = sess;
-        vector<BaseAction*> all_action = session.get_actionlog();//TODO:implement getter for the action log
+        Session* session = &sess;
+        vector<BaseAction*> all_action = session->get_actionlog();
         if(!all_action.empty()) {
             for (int i = all_action.size() - 1; i >= 0; i--) {
                 cout<<all_action.at(i)->toString()<<"\n"<<endl;
@@ -228,12 +223,11 @@ using namespace std;
             this->complete();
         }
         else{this->error("Action Log is empty");}
-        session.addAction(this);
+        session->addAction(this);
     }
     string PrintActionsLog::toString() const {
-        string toReturn="PrintActionsLog ";
+        string toReturn="PrintActionsLog";
         toReturn.append((const char*) this->getStatus());
-        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
