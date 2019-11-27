@@ -21,8 +21,13 @@ using namespace std;
 
     for(int k=0; k< inf["tv_series"].size(); k++){
         for(int season=1; season<= inf["tv_series"][k]["season"].size(); season++){
-            for(int episode = 1; episode <= inf["tv_series"][i]["seasons"][season-1]; ++episode) {
-                content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1));
+            for(int episode = 1; episode <= inf["tv_series"][k]["seasons"][season-1]; ++episode) {
+                if (episode = inf["tv_series"][k]["seasons"][season-1]) {
+                    content.push_back(
+                            new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season,
+                                        episode, inf["tv_series"][k]["tags"], -1));
+                }
+                else  content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1));
                 id++;
             }
         }
