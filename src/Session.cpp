@@ -15,19 +15,17 @@ using namespace std;
 
     int id=1;
     for(int i=0; inf["movies"].size(); i++){
-        content.push_back(new Movie(id, inf["movies"][i], inf["movies"][i]["name"], inf["movies"][i]["length"], inf["movies"][i]["tags"]))
+        content.push_back(new Movie(id, inf["movies"][i]["name"], inf["movies"][i]["length"], inf["movies"][i]["tags"]))
         id++;
     }
 
     for(int k=0; k< inf["tv_series"].size(); k++){
         for(int season=1; season<= inf["tv_series"][k]["season"].size(); season++){
             for(int episode = 1; episode <= inf["tv_series"][i]["seasons"][season-1]; ++episode) {
-                content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"]);
+                content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1);
                 id++
             }
-            int n= content.size();
-            content(n).id =-1;
-
+            content.at(content.size()-1).set_nextID(-1);
         }
     }
 }//TODO: to check if it works
