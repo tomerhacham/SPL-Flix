@@ -96,6 +96,10 @@ using namespace std;
         return true;
 }
 
+    CreateUser *CreateUser::clone() {
+        return new CreateUser(*this);
+    }
+
 //endregion
 
 //region ChangeActiveUser
@@ -125,6 +129,11 @@ using namespace std;
         return toReturn;
 
     }
+
+    ChangeActiveUser *ChangeActiveUser::clone() {
+        return new ChangeActiveUser(*this);
+
+    }
 //endregion
 
 //region DeleteUser
@@ -151,6 +160,10 @@ using namespace std;
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
+    }
+
+    DeleteUser *DeleteUser::clone() {
+        return new DeleteUser(*this);
     }
 //endregion
 
@@ -183,6 +196,10 @@ using namespace std;
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
+
+DuplicateUser *DuplicateUser::clone() {
+    return new DuplicateUser(*this);
+}
 //endregion
 
 // region PrintContentList
@@ -211,6 +228,10 @@ using namespace std;
             toReturn.append(this->getErrorMsg());
             return toReturn;
     }
+
+PrintContentList *PrintContentList::clone() {
+    return new PrintContentList(*this);
+}
 //endregion
 
 // region Watch
@@ -252,6 +273,10 @@ using namespace std;
 
     }
 
+Watch *Watch::clone() {
+    return new Watch(*this);
+}
+
 //endregion
 
 // region PrintActionsLog
@@ -276,6 +301,10 @@ using namespace std;
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
+
+PrintActionsLog *PrintActionsLog::clone() {
+    return new PrintActionsLog(*this);
+}
 //endregion
 
 // region Exit
@@ -293,6 +322,10 @@ using namespace std;
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
+
+Exit *Exit::clone() {
+    return new Exit(*this);
+}
 //endregion
 
 //region PrintWatchHistory
@@ -316,6 +349,10 @@ string PrintWatchHistory::toString() const {
     toReturn.append(" ");
     toReturn.append(this->getErrorMsg());
     return toReturn;
+}
+
+PrintWatchHistory *PrintWatchHistory::clone() {
+    return new PrintWatchHistory(*this);
 }
 //endregion
 

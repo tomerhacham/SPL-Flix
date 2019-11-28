@@ -22,7 +22,7 @@ using namespace std;
    for(int i=0; inf["movies"].size(); i++){
         length = inf["movies"][i]["length"];
         name= inf["movies"][i]["name"];
-        this.content.push_back(new Movie(id, name, length , inf["movies"][i]["tags"]));
+        this->content.push_back(new Movie(id, name, length , inf["movies"][i]["tags"]));
         id++;
     }
 
@@ -46,25 +46,23 @@ using namespace std;
     Session::Session(const Session &other) {
         for (int i=0; i<other.content.size(); i++){
             Watchable* watch= other.content.at(i);
-            this.content.push_back(watch);
+            this->content.push_back(watch->clone());
         }
         for(int j=0; j< other.actionsLog.size(); j++){
-            BaseAction* bsa= other.actionsLog.at(i);
-            this.actionsLog.push_back(bsa);
+            BaseAction* bsa= other.actionsLog.at(j);
+            this->actionsLog.push_back(bsa);
         }
-        iterator it = other.userMap.begin();
-        while (it != userMap.end()){
-            string name= (string)it.first();
-            User* user= it.second();
-            this.userMap.insert(name,user);
-            it++
+        for(auto pair : other.userMap)
+        {
+            this->userMap.insert(userMap.begin(),pair);
         }
-        this.activeUser= other.activeUser;
+
+        this->activeUser= other.activeUser;
         for (int k = 0; k <other.parameters.size() ; ++k) {
-            this.parameters.push_back(other.parameters.at(i));
+            this->parameters.push_back(other.parameters.at(k));
         }
-        this.command= other.command;
-        this.exit= other.exit;
+        this->command= other.command;
+        this->exit= other.exit;
     }//copy constructor
     Session::~Session() {
         delete this->activeUser;

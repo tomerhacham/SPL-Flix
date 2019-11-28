@@ -31,10 +31,6 @@ using namespace std;
         concat_tags.at(concat_tags.size()-1)=']';
         return concat_tags;
     }
-
-
-
-
 //endregion
 
 //region Movie
