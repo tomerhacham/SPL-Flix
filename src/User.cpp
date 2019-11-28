@@ -325,7 +325,7 @@ using namespace std;
 
         vector<pair<string, int>> sort_tags  = this->sort_tags();//tags sorts in descending order by the second value first(freq) and if equal so by lexicographic order
         for (pair<string, int> tag : sort_tags){
-            std::cout << tag.first << " :: " << tag.second << std::endl;//for debugging
+            cout << tag.first << " :: " << tag.second <<endl;//for debugging
             if(nextContent==nullptr){
                 nextContent = get_content_by_tag(tag.first);
             }

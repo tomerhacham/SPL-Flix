@@ -52,7 +52,11 @@ using namespace std;
         vector<string> parameters = session->get_parameters();
         string username = parameters.at(0);
         string algorithm = parameters.at(1);
-        if(is_valid_algorithm(algorithm) && session->get_userbyName(username)==nullptr){
+        if(session->get_userbyName(username)!=nullptr)
+        {
+            this->error("the new user name is already taken");
+        }
+        if(is_valid_algorithm(algorithm) && this->getStatus()!=ERROR){
             User* new_user;
             if (algorithm == "len")
             {
@@ -72,7 +76,7 @@ using namespace std;
             session->change_active_user(new_user);
             this->complete();
         }
-        else{this->error("Invalid Algorithm");}
+        else{this->error("Invalid Algorithem");}
         session->addAction(this);
         return;
 
@@ -163,7 +167,9 @@ using namespace std;
         if(username==new_username){
             this->error("Duplicate user with the same username");
         }
-        else if(user!= nullptr){
+        if(user== nullptr)
+            {this->error("User not found!");}
+        else if(user!= nullptr && this->getStatus()!=ERROR){
             User* duplicate_user =user->clone();
             duplicate_user->setName(new_username);
             session->addUser(duplicate_user);
@@ -219,20 +225,23 @@ using namespace std;
         long content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
         Watchable* toWatch= session->find_content_by_id(content_id);
+        Watchable* recom=nullptr;
         if(toWatch!=nullptr) {
             User* activeuser = session->get_active_user();
             activeuser->watch(toWatch,sess);
             this->complete();
-            cout<<"We recommend watching "<<toWatch->getNextWatchable(sess)->toString()<<", continue watching? [y/n]"<<endl;
+            recom = toWatch->getNextWatchable(sess);
+            cout<<"We recommend watching "<<recom->toString()<<", continue watching? [y/n]"<<endl;
             string input;
             getline(cin,input);
             cout<<input<<endl;
-            if(input=="y"){accept_rec=true;}
+            if(input=="y")
+            {accept_rec=true;}
         }
         else{
             this->error("Content ID did not found");
         }
-        if(accept_rec){session->accept_recommendation(toWatch->getNextWatchable(sess)->get_id());}
+        if(accept_rec){session->accept_recommendation(recom->get_id());}
     }
     string Watch::toString() const {
         string toReturn="Watch ";

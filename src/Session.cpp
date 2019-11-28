@@ -1,6 +1,6 @@
-#include "include/Session.h"
+#include <../include/Session.h>
 #include <../include/json.hpp>
-#include <include/User.h>
+#include <../include/User.h>
 #include <fstream>
 #include <iostream>
 #include <Watchable.h>
@@ -10,35 +10,62 @@ using namespace std;
 //Constructors
     Session::Session(const string &configFilePath) {
     using json= nlohmann::json;
-    ifstream i("/home/tomer/SPL/assignment_1/config1.json");
+    ifstream i(configFilePath);
     json inf;
     i >> inf;
 
 
     int id=1;
-    for(int i=0; i<inf["movies"].size(); i++){
-        content.push_back(new Movie(id, inf["movies"][i]["name"], inf["movies"][i]["length"], inf["movies"][i]["tags"]));
+    int length;
+    string name;
+
+   for(int i=0; inf["movies"].size(); i++){
+        length = inf["movies"][i]["length"];
+        name= inf["movies"][i]["name"];
+        this.content.push_back(new Movie(id, name, length , inf["movies"][i]["tags"]));
         id++;
     }
 
     for(int k=0; k< inf["tv_series"].size(); k++){
-        for(int season=1; season<= inf["tv_series"][k]["seasons"].size(); season++){
-            for(int episode = 1; episode <= inf["tv_series"][k]["seasons"][season-1]; ++episode) {
-                if (episode == inf["tv_series"][k]["seasons"][season-1]) {
-                    content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season,episode, inf["tv_series"][k]["tags"], -1));
+        for(long season=1; season<= inf["tv_series"][k]["seasons"].size(); season++){
+            for(long episode = 1; episode <= inf["tv_series"][k]["seasons"][season-1]; ++episode) {
+                length= (inf["tv_series"][k]["episode_length"]);
+                name= inf["tv_series"][k]["name"];
+                if (episode = inf["tv_series"][k]["seasons"][season-1]) {
+                    content.push_back(
+                            new Episode(id, name, length , season,episode, inf["tv_series"][k]["tags"], -1));
                 }
-                else  {
-                    Episode* e = new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1);
-                    content.push_back(e);
-                }
+                else  content.push_back(new Episode(id, name , length , season, episode, inf["tv_series"][k]["tags"],episode+1));
                 id++;
             }
         }
     }
-}//TODO: to check if it works
+    for(int f = 0; f < content.size(); ++f)
+        std::cout << content[f]->toString() << '\n';
+}
     Session::Session(const Session &other) {
-
-    }//TODO: implement this copy constructor
+        for (int i=0; i<other.content.size(); i++){
+            Watchable* watch= other.content.at(i);
+            this.content.push_back(watch);
+        }
+        for(int j=0; j< other.actionsLog.size(); j++){
+            BaseAction* bsa= other.actionsLog.at(i);
+            this.actionsLog.push_back(bsa);
+        }
+        iterator it = other.userMap.begin();
+        while (it != userMap.end()){
+            string name= (string)it.first();
+            User* user= it.second();
+            this.userMap.insert(name,user);
+            it++
+        }
+        this.activeUser= other.activeUser;
+        for (int k = 0; k <other.parameters.size() ; ++k) {
+            this.parameters.push_back(other.parameters.at(i));
+        }
+        this.command= other.command;
+        this.exit= other.exit;
+    }//copy constructor
     Session::~Session() {
         delete this->activeUser;
         for(auto elem: this->userMap){
@@ -58,9 +85,62 @@ using namespace std;
         }
         this->actionsLog.clear();
         this->parameters.clear();
-    }
+    } //distructor
+    Session& Session::operator=(const Session &other){
+        if(this= &other){
+            return *this;
+        }
+        this.clear();
+        for (int i=0; i<other.content.size(); i++){
+            Watchable* watch= other.content.at(i);
+            this.content.push_back(watch);
+        }
+        for(int j=0; j< other.actionsLog.size(); j++){
+            BaseAction* bsa= other.actionsLog.at(i);
+            this.actionsLog.push_back(bsa);
+        }
+        iterator it = other.userMap.begin();
+        while (it != userMap.end()){
+            string name= (string)it.first();
+            User* user= it.second();
+            this.userMap.insert(name,user);
+            it++
+        }
+        this.activeUser= other.activeUser;
+        for (int k = 0; k <other.parameters.size() ; ++k) {
+            this.parameters.push_back(other.parameters.at(i));
+        }
+        this.command= other.command;
+        this.exit= other.exit;
 
-
+        return *this;
+    }// copy Assigment operator
+    Session& Session::operator=(const Session &other){
+        if(this!= other){
+            this.clear():
+            this.content= other.content;
+            this.actionsLog= other.actionsLog;
+            this.userMap= other.userMap;
+            this.activeUser= other.activeUser;
+            this.parameters= other.parameters;
+            this.command= other.command;
+            this.exit= other.exit;
+            other.clear();
+            return *this;
+        }
+        return *this;
+    }// move assigment operator
+    Session::Session(const Session &other){
+        this.clear():
+        this.content= other.content;
+        this.actionsLog= other.actionsLog;
+        this.userMap= other.userMap;
+        this.activeUser= other.activeUser;
+        this.parameters= other.parameters;
+        this.command= other.command;
+        this.exit= other.exit;
+        other.clear();
+    }// move constructor
 //Methods:
 
 
@@ -90,57 +170,53 @@ using namespace std;
     void Session::start() {
         exit = false;
         cout << "SPLFLIX is now on!”" << endl;
-        LengthRecommenderUser* def = new LengthRecommenderUser("default");
-        addUser(def);
-        activeUser=def;
         while (!exit) {
+            cout<<"HERE";
             string input;
-            getline(cin,input);
-            //cout<<input<<endl;
+            cin >> input;
             parsing(input);
-            //for(int i=0;i<parameters.size();i++){cout<<parameters[i]<<endl;}
 
             if (command == "createuser") {
                 CreateUser *cu = new CreateUser();
                 cu->act(*this);
             }
 
-            else if (command == "changeuser") {
+            if (command == "changeuser") {
                 ChangeActiveUser* cat = new ChangeActiveUser();
                 cat->act(*this);
             }
 
-            else if (command == "deleteuser") {
+            if (command == "deleteuser") {
                 DeleteUser* du = new DeleteUser();
                 du->act(*this);
             }
 
-            else if (command == "dupuser") {
+            if (command == "dupuser") {
                 DuplicateUser* dpu = new DuplicateUser();
                 dpu->act(*this);
             }
 
-            else if (command == "content") {
+            if (command == "content") {
                 PrintContentList* pcl = new PrintContentList();
                 pcl->act(*this);
             }
 
-            else if (command == "watchhist") {
+            if (command == "watchhist") {
                 PrintWatchHistory* pwh = new PrintWatchHistory();
                 pwh->act(*this);
             }
 
-            else if (command == "watch") {
+            if (command == "watch") {
                 Watch* wat = new Watch();
                 wat->act(*this);
             }
 
-            else if (command == "log") {
+            if (command == "log") {
                 PrintActionsLog* pal = new PrintActionsLog();
                 pal->act(*this);
             }
 
-            else if (command == "exit") {
+            if (command == "exit") {
                 Exit* ext = new Exit();
                 ext->act(*this);
             }
@@ -159,12 +235,13 @@ using namespace std;
         this->activeUser= user;
     }
     void Session::parsing(string s)  {
-        istringstream iss(s);
-        vector<string> param ((istream_iterator<string>(iss)),istream_iterator<string>());
-        this->parameters.clear();
-        command=param.front();
-        param.erase(param.begin()+0);
-        parameters=param;
+        stringstream ss(s);
+        istream_iterator<string> begin(ss);
+        istream_iterator<string> end;
+        vector<string> parameters(begin, end);
+        this->parameters= parameters;
+        command= this->parameters.at(0);
+        this->parameters.erase(parameters.begin()+0);
     }
     void Session::delete_user(User * user) {
         userMap.erase(user->getName());
@@ -172,6 +249,19 @@ using namespace std;
     }
     void Session::Exit_session() {
         this->exit=true;
+    }
+    void Session::clear(){
+        for (int i=0; i<this.content.size(); i++){
+            this.content.at(i).clear();
+        }
+        for (int j = 0; j <this.actionsLog.size(); ++j) {
+            this.actionsLog.at(j).clear;
+        }
+        this.userMap.clear();
+        this.activeUser.clear();
+        this.parameters.clear();
+        this.command.clear();
+        this.exit.clear();
     }
 
     vector<string> Session::get_parameters() {
@@ -181,11 +271,11 @@ using namespace std;
     vector<Watchable *> Session::get_content() {  return this->content;
     }
 
-void Session::accept_recommendation(long recommended_id) {
-        this->parameters.at(0)=to_string(recommended_id);
-        Watch* WatchRecommended = new Watch();
-        WatchRecommended->act(*this);
-}
+void Session::accept_recommendation(long recomended_id) {
+        this->parameters.at(0)=to_string(recomended_id);
+        Watch* RecWatch = new Watch();
+        RecWatch->act(*this);
 
+}
 
 

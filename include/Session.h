@@ -13,8 +13,12 @@ class Session{
 public:
 
     Session(const std::string &configFilePath);
-    Session(const Session& other);
-    ~Session();
+    Session(const Session& other);//copy constructor
+    Session& Session::operator=(const Session &other);// copy Assigment operator
+    ~Session();//distructor
+    Session& Session::operator=(const Session &other){}// move assigment operator
+    Session::Session(const Session &other){}// move constructor
+
     public: vector<string> get_parameters();
     public: vector<Watchable*> get_content();
     public: Watchable* find_content_by_id(long);
@@ -26,17 +30,19 @@ public:
     void addUser(User*);
     void addAction(BaseAction*);
     void change_active_user (User*);
-    void accept_recommendation(long recommended_id);
     void parsing(string);
     void delete_user(User*);
     void Exit_session();
+    void clear();
+    void accept_recommendation(long recomended_id);
+
 
 private:
-    vector<Watchable*> content;
-    vector<BaseAction*> actionsLog;
-    unordered_map<std::string,User*> userMap;
+    std::vector<Watchable*> content;
+    std::vector<BaseAction*> actionsLog;
+    std::unordered_map<std::string,User*> userMap;
     User* activeUser;
-    vector<string> parameters;
+    std::vector<string> parameters;
     string command;
     bool exit;
 };
