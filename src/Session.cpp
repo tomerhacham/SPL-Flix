@@ -10,13 +10,13 @@ using namespace std;
 //Constructors
     Session::Session(const string &configFilePath) {
     using json= nlohmann::json;
-    ifstream i(configFilePath);
+    ifstream i("/home/tomer/SPL/assignment_1/config1.json");
     json inf;
     i >> inf;
 
 
     int id=1;
-    for(int i=0; inf["movies"].size(); i++){
+    for(int i=0; i<inf["movies"].size(); i++){
         content.push_back(new Movie(id, inf["movies"][i]["name"], inf["movies"][i]["length"], inf["movies"][i]["tags"]));
         id++;
     }

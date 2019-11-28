@@ -13,6 +13,7 @@ public:
     Watchable(long id, int length, const vector<string>& tags);//parameter constructor
     Watchable(const Watchable& other);//copy constructor
     Watchable(Watchable&& other);//Move constructor
+    ~Watchable();
     virtual string toString() const = 0;
     virtual Watchable* getNextWatchable(Session&) const = 0;
     virtual Watchable* clone()=0;

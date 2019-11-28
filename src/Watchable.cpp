@@ -14,6 +14,9 @@ using namespace std;
         //TODO: might change the length in order to know that we move this watchable object
 
     }
+    Watchable::~Watchable() {
+        this->tags.clear();
+    }
     //Methods:
     vector<string> Watchable::get_tags() const {return this->tags;}
     long Watchable::get_id() const {return this->id;}
@@ -27,6 +30,10 @@ using namespace std;
         concat_tags.at(concat_tags.size()-1)=']';
         return concat_tags;
     }
+
+
+
+
 //endregion
 
 //region Movie

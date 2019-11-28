@@ -86,7 +86,7 @@ using namespace std;
                 remaning.erase(remaning.begin() + index);
             }
     }
-    vector<Watchable *> User::get_remaning_watchable() const {
+    vector<Watchable*> User::get_remaning_watchable() const {
         return remaning_watchable;
     }
     void User::clear() {
@@ -267,37 +267,34 @@ using namespace std;
         if(this!=&other){
             this->setName(other.getName());
             this->clear();
-
-            for(auto watchable:other.history){
-                history.push_back(watchable);
+            for(auto watchable : other.history){
+                history.push_back(watchable->clone());
             }
-
-            for(auto watchable:other.get_remaning_watchable()){
-                vector<Watchable*> new_remaning;
-                new_remaning.push_back(watchable);
-                //this->set_remaning_watchable(new_remaning);
+            for(auto watchable : other.get_remaning_watchable()){
+                this->get_remaning_watchable().push_back(watchable->clone());
             }
-            for(auto elem : other.tags_freq)
+            for(auto elem : other.tags_freq){
                 this->tags_freq.insert(pair<string,int>(elem.first,elem.second));
+            }
         }
         return *this;
     }
     GenreRecommenderUser &GenreRecommenderUser::operator=(GenreRecommenderUser &&other) //move assign operator
     {
         if(this!=&other){
-            this->setName(other.getName());
             this->clear();
-            for(auto watchable:other.history) {
-                history.push_back(watchable);
+            for(auto content : history){
+                delete &content;
             }
-            vector<Watchable*> new_remaning;
-            for(auto watchable:other.get_remaning_watchable()) {
-                new_remaning.push_back(watchable);
+            for(auto content : get_remaning_watchable()){
+                delete &content;
             }
-            //this->set_remaning_watchable(new_remaning);
-            for(auto elem : other.tags_freq)
+            this->clear();
+            this->history=other.history;
+            //this->set_remaning_watchable(other.get_remaning_watchable());
+            for(auto elem : other.tags_freq){
                 this->tags_freq.insert(pair<string,int>(elem.first,elem.second));
-
+            }
             other.clear();
         }
         return *this;
