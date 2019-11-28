@@ -75,7 +75,11 @@ using namespace std;
         cout<<"Watching "<<watched_content->toString()<<endl;
             int index=0;
             bool found=false;
-            this->history.push_back(watched_content);
+            bool existinhistory=false;
+            for(auto watchable:history){
+                if(watchable->get_id()==watched_content->get_id()){existinhistory=true;}
+            }
+            if(!existinhistory){this->history.push_back(watched_content);}
             vector<Watchable*> remaning = get_remaning_watchable();
             if(!remaning.empty()) {
                 for (int i = 0; !found && i < remaning.size(); i++) {

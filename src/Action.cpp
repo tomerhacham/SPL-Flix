@@ -34,6 +34,14 @@ using namespace std;
     void BaseAction::set_ErrorMsg(string ErrorMsg) {
         this->errorMsg=ErrorMsg;
     }
+    string BaseAction::StatusToString(ActionStatus status) const {
+            switch (status)
+            {
+                case COMPLETED:   return "COMPLETE";
+                case ERROR:   return "ERROR:";
+                case PENDING: return "PENDING";
+            }
+        }
 //endregion
 
 //region CreateUser
@@ -46,29 +54,34 @@ using namespace std;
         string algorithm = parameters.at(1);
         if(is_valid_algorithm(algorithm) && session->get_userbyName(username)==nullptr){
             User* new_user;
-            if (algorithm == "len") {
+            if (algorithm == "len")
+            {
                 new_user = new LengthRecommenderUser(username);
                 new_user->set_remaning_watchable(session->get_content());
-            } else if (algorithm == "rer") {
+            }
+            else if (algorithm == "rer")
+            {
                 new_user = new RerunRecommenderUser(username);
-            } else if (algorithm == "gen") {
+            }
+            else if (algorithm == "gen")
+            {
                 new_user = new GenreRecommenderUser(username);
                 new_user->set_remaning_watchable(session->get_content());
             }
             session->addUser(new_user);
-            this->complete();
             session->change_active_user(new_user);
+            this->complete();
         }
-        else{
-            this->error("Invalid Algorithm");
-        }
+        else{this->error("Invalid Algorithm");}
         session->addAction(this);
+        return;
 
     }
         string CreateUser::toString() const
         {
-            string toReturn="CreateUser";
-            toReturn.append((const char*) this->getStatus());
+            string toReturn="CreateUser ";
+            toReturn.append(StatusToString(this->getStatus()));
+            toReturn.append(" ");
             toReturn.append(this->getErrorMsg());
             return toReturn;
         }
@@ -101,8 +114,9 @@ using namespace std;
 
     }
     string ChangeActiveUser::toString() const {
-        string toReturn="ChangeActiveUser";
-        toReturn.append((const char*) this->getStatus());
+        string toReturn="ChangeActiveUser ";
+        toReturn.append(StatusToString(this->getStatus()));
+        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
@@ -127,8 +141,9 @@ using namespace std;
         session->addAction(this);
     }
     string DeleteUser::toString() const {
-        string toReturn="DeleteUser";
-        toReturn.append((const char*) this->getStatus());
+        string toReturn="DeleteUser ";
+        toReturn.append(StatusToString(this->getStatus()));
+        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
@@ -156,8 +171,9 @@ using namespace std;
         }
     }
     string DuplicateUser::toString() const {
-        string toReturn="DuplicateUser";
-        toReturn.append((const char*) this->getStatus());
+        string toReturn="DuplicateUser ";
+        toReturn.append(StatusToString(this->getStatus()));
+        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
@@ -183,8 +199,9 @@ using namespace std;
         }
     }
     string PrintContentList::toString() const {
-            string toReturn="PrintContentList";
-            toReturn.append((const char*) this->getStatus());
+            string toReturn="PrintContentList ";
+            toReturn.append(StatusToString(this->getStatus()));
+            toReturn.append(" ");
             toReturn.append(this->getErrorMsg());
             return toReturn;
     }
@@ -197,6 +214,7 @@ using namespace std;
     {
         bool accept_rec=false;
         Session* session = &sess;
+        session->addAction(this);
         stringstream stm(session->get_parameters().at(0));
         long content_id=0;
         stm>>content_id; //preform cast of string to int in order to search the content_id
@@ -208,41 +226,23 @@ using namespace std;
             cout<<"We recommend watching "<<toWatch->getNextWatchable(sess)->toString()<<", continue watching? [y/n]"<<endl;
             string input;
             getline(cin,input);
+            cout<<input<<endl;
             if(input=="y"){accept_rec=true;}
         }
         else{
             this->error("Content ID did not found");
         }
-        session->addAction(this);
-        if(accept_rec){session->accept_recommendation()}
+        if(accept_rec){session->accept_recommendation(toWatch->getNextWatchable(sess)->get_id());}
     }
     string Watch::toString() const {
-        string toReturn="Watch";
-        toReturn.append((const char*) this->getStatus());
+        string toReturn="Watch ";
+        toReturn.append(StatusToString(this->getStatus()));
+        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
 
     }
 
-void Watch::reWatch(Session &sess, Watchable *recommendation) {
-    bool accept_rec=false;
-    Session* session = &sess;
-    Watchable* toWatch= recommendation;
-    if(toWatch!=nullptr) {
-        User* activeuser = session->get_active_user();
-        activeuser->watch(toWatch,sess);
-        this->complete();
-        cout<<"We recommend watching "<<toWatch->toString()<<", continue watching? [y/n]"<<endl;
-        string input;
-        getline(cin,input);
-        if(input=="y"){accept_rec=true;}
-    }
-    else{
-        this->error("Content ID did not found");
-    }
-    session->addAction(this);
-    if(accept_rec){}
-}
 //endregion
 
 // region PrintActionsLog
@@ -261,8 +261,9 @@ void Watch::reWatch(Session &sess, Watchable *recommendation) {
         session->addAction(this);
     }
     string PrintActionsLog::toString() const {
-        string toReturn="PrintActionsLog";
-        toReturn.append((const char*) this->getStatus());
+        string toReturn="PrintActionsLog ";
+        toReturn.append(StatusToString(this->getStatus()));
+        toReturn.append(" ");
         toReturn.append(this->getErrorMsg());
         return toReturn;
     }
@@ -301,8 +302,9 @@ void PrintWatchHistory::act(Session &sess) {
     }
 }
 string PrintWatchHistory::toString() const {
-    string toReturn="PrintWatchHistory";
-    toReturn.append((const char*) this->getStatus());
+    string toReturn="PrintWatchHistory ";
+    toReturn.append(StatusToString(this->getStatus()));
+    toReturn.append(" ");
     toReturn.append(this->getErrorMsg());
     return toReturn;
 }

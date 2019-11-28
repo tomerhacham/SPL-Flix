@@ -96,9 +96,9 @@ using namespace std;
         while (!exit) {
             string input;
             getline(cin,input);
-            cout<<input<<endl;
+            //cout<<input<<endl;
             parsing(input);
-            for(int i=0;i<parameters.size();i++){cout<<parameters[i]<<endl;}
+            //for(int i=0;i<parameters.size();i++){cout<<parameters[i]<<endl;}
 
             if (command == "createuser") {
                 CreateUser *cu = new CreateUser();
@@ -165,13 +165,6 @@ using namespace std;
         command=param.front();
         param.erase(param.begin()+0);
         parameters=param;
-        /*stringstream ss(s);
-        istream_iterator<string> begin(ss);
-        istream_iterator<string> end;
-        vector<string> parameters(begin, end);
-        this->parameters= parameters;
-        command= this->parameters.at(0);
-        this->parameters.erase(parameters.begin()+0);*/
     }
     void Session::delete_user(User * user) {
         userMap.erase(user->getName());
@@ -188,10 +181,11 @@ using namespace std;
     vector<Watchable *> Session::get_content() {  return this->content;
     }
 
-void Session::accept_recommendation(Watchable * recomendation) {
-        Watch* watchrec = new Watch();
-        watchrec->act(*this);
-
+void Session::accept_recommendation(long recommended_id) {
+        this->parameters.at(0)=to_string(recommended_id);
+        Watch* WatchRecommended = new Watch();
+        WatchRecommended->act(*this);
 }
+
 
 

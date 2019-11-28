@@ -23,6 +23,7 @@ public:
     string getErrorMsg() const;
     void set_ErrorMsg(string ErrorMsg);
     void set_status(ActionStatus status);
+    string StatusToString(ActionStatus status) const;
 
 private:
 	string errorMsg;
@@ -70,8 +71,7 @@ public:
 class Watch : public BaseAction {
 public:
 	virtual void act(Session& sess);
-	virtual void reWatch(Session& sess, Watchable* recommendation);
-	virtual std::string toString() const;
+	virtual string toString() const;
 };
 
 class PrintActionsLog : public BaseAction {

@@ -26,17 +26,17 @@ public:
     void addUser(User*);
     void addAction(BaseAction*);
     void change_active_user (User*);
-    void accept_recommendation(Watchable*);
+    void accept_recommendation(long recommended_id);
     void parsing(string);
     void delete_user(User*);
     void Exit_session();
 
 private:
-    std::vector<Watchable*> content;
-    std::vector<BaseAction*> actionsLog;
-    std::unordered_map<std::string,User*> userMap;
+    vector<Watchable*> content;
+    vector<BaseAction*> actionsLog;
+    unordered_map<std::string,User*> userMap;
     User* activeUser;
-    std::vector<string> parameters;
+    vector<string> parameters;
     string command;
     bool exit;
 };
