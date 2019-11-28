@@ -1,5 +1,4 @@
 #include <include/Watchable.h>
-#include  <sstream>
 #include <include/User.h>
 #include <include/Session.h>
 using namespace std;

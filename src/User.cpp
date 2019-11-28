@@ -9,27 +9,18 @@ using namespace std;
 //region User abstract
 
     //Constructors
-    User::User(const string &name): name(name) {}//parameter constructor
-    User::User(const User& other): name(other.getName())//copy constructor
+    User::User(const string &name): history(), remaning_watchable(), name(name) {}//parameter constructor
+    User::User(const User& other):history(), remaning_watchable(),name(other.getName())//copy constructor
     {
-        for(int i=0;i<other.history.size();i++){
-            Watchable* watch = other.history.at(i);
-            this->history.push_back(watch);
+        for(auto content : other.history){
+            history.push_back(content->clone());
         }
-        for(int i=0;i<other.remaning_watchable.size();i++){
-            Watchable* watch = other.remaning_watchable.at(i);
-            this->remaning_watchable.push_back(watch);
+        for(auto content : other.remaning_watchable){
+            remaning_watchable.push_back(content->clone());
         }
     }
-    User::User(User &&other):name(other.getName()) //Move constructor
+    User::User(User &&other):history(other.history), remaning_watchable(other.remaning_watchable),name(other.getName()) //Move constructor
     {
-        for(auto watchable:other.history){
-            history.push_back(watchable);
-        }
-        for(auto watchable:other.get_remaning_watchable()){
-            remaning_watchable.push_back(watchable);
-        }
-
         other.clear();
     }
     User& User::operator=(const User &other) //copy assignment operator
@@ -38,11 +29,10 @@ using namespace std;
             this->name=other.getName();
             this->clear();
             for(auto watchable : other.history){
-                history.push_back(watchable);
+                history.push_back(watchable->clone());
             }
             for(auto watchable : other.get_remaning_watchable()){
-                remaning_watchable.push_back(watchable);
-
+                remaning_watchable.push_back(watchable->clone());
             }
         }
         return *this;
@@ -51,14 +41,27 @@ using namespace std;
     {
         if(this!=&other){
             this->clear();
+            for(auto content : history){
+                delete &content;
+            }
+            for(auto content : remaning_watchable){
+                delete &content;
+            }
+            this->clear();
             this->history=other.history;
-            this->remaning_watchable=other.remaning_watchable;
+            this->remaning_watchable=other.get_remaning_watchable();
             other.clear();
         }
         return *this;
     }
     User::~User()//destructor
     {
+        for(auto content : history){
+            delete &content;
+        }
+        for(auto content : remaning_watchable){
+            delete &content;
+        }
         this->clear();
     }
 
@@ -103,41 +106,36 @@ using namespace std;
     LengthRecommenderUser::LengthRecommenderUser(const string &name):User(name) ,avgTime(0){}
     LengthRecommenderUser::LengthRecommenderUser(const LengthRecommenderUser &other):User(other), avgTime(avgTime) {}
     LengthRecommenderUser::LengthRecommenderUser(LengthRecommenderUser &&other):User(other) , avgTime(other.avgTime)//Move constructor
-    {other.clear();}
+    {//TODO: might add other.clear because the fun jump to the copy and no to the move con of the User
+        }
     LengthRecommenderUser& LengthRecommenderUser::operator=(const LengthRecommenderUser &other)//copy assignment operator
     {
         if(this!=&other){
             this->setName(other.getName());
-            this->avgTime=other.avgTime;
             this->clear();
-
-        for(auto watchable:other.history){
-            history.push_back(watchable);
-        }
-
-        for(auto watchable:other.get_remaning_watchable()){
-                vector<Watchable*> new_remaning;
-                new_remaning.push_back(watchable);
-                this->set_remaning_watchable(new_remaning);
+            for(auto watchable : other.history){
+                history.push_back(watchable->clone());
             }
-
-         }
+            for(auto watchable : other.get_remaning_watchable()){
+                this->get_remaning_watchable().push_back(watchable->clone());
+            }
+        }
         return *this;
      }
     LengthRecommenderUser& LengthRecommenderUser::operator=(LengthRecommenderUser &&other)//Move assingment operator
     {
         if(this!=&other){
-            this->setName(other.getName());
-            this->avgTime=other.avgTime;
             this->clear();
-            for(auto watchable:other.history) {
-                history.push_back(watchable);
+            this->avgTime=other.avgTime;
+            for(auto content : history){
+                delete &content;
             }
-            vector<Watchable*> new_remaning;
-            for(auto watchable:other.get_remaning_watchable()) {
-                new_remaning.push_back(watchable);
+            for(auto content : get_remaning_watchable()){
+                delete &content;
             }
-            this->set_remaning_watchable(new_remaning);
+            this->clear();
+            this->history=other.history;
+            this->set_remaning_watchable(other.get_remaning_watchable());
             other.clear();
         }
         return *this;
@@ -189,22 +187,19 @@ using namespace std;
     RerunRecommenderUser::RerunRecommenderUser(const RerunRecommenderUser& other): User(other), index(other.index) //copy constructor
     {}
     RerunRecommenderUser::RerunRecommenderUser(RerunRecommenderUser &&other):User(other), index(other.index)//Move constructor
-    {other.clear();}
+    {//TODO: same note as prev
+        }
     RerunRecommenderUser &RerunRecommenderUser::operator=(const RerunRecommenderUser &other)//copy assignment operator
     {
         if(this!=&other){
             this->setName(other.getName());
-            this->index=other.get_index();
+            this->index=other.index;
             this->clear();
-
-            for(auto watchable:other.history){
-                history.push_back(watchable);
+            for(auto watchable : other.history){
+                history.push_back(watchable->clone());
             }
-
-            for(auto watchable:other.get_remaning_watchable()){
-                vector<Watchable*> new_remaning;
-                new_remaning.push_back(watchable);
-                this->set_remaning_watchable(new_remaning);
+            for(auto watchable : other.get_remaning_watchable()){
+                this->get_remaning_watchable().push_back(watchable->clone());
             }
         }
         return *this;
@@ -212,17 +207,17 @@ using namespace std;
     RerunRecommenderUser &RerunRecommenderUser::operator=(RerunRecommenderUser &&other)//move assign operator
     {
         if(this!=&other){
-            this->setName(other.getName());
-            this->index=other.get_index();
             this->clear();
-            for(auto watchable:other.history) {
-                history.push_back(watchable);
+            this->index=other.index;
+            for(auto content : history){
+                delete &content;
             }
-            vector<Watchable*> new_remaning;
-            for(auto watchable:other.get_remaning_watchable()) {
-                new_remaning.push_back(watchable);
+            for(auto content : get_remaning_watchable()){
+                delete &content;
             }
-            this->set_remaning_watchable(new_remaning);
+            this->clear();
+            this->history=other.history;
+            this->set_remaning_watchable(other.get_remaning_watchable());
             other.clear();
         }
         return *this;
