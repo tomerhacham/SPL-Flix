@@ -26,6 +26,7 @@ public:
     void addUser(User*);
     void addAction(BaseAction*);
     void change_active_user (User*);
+    void accept_recommendation(Watchable*);
     void parsing(string);
     void delete_user(User*);
     void Exit_session();

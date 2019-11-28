@@ -72,6 +72,7 @@ using namespace std;
         this->name=name;
     }
     void User::watch(Watchable *watched_content, Session &sess) {
+        cout<<"Watching "<<watched_content->toString()<<endl;
             int index=0;
             bool found=false;
             this->history.push_back(watched_content);

@@ -21,6 +21,7 @@ using namespace std;
     vector<string> Watchable::get_tags() const {return this->tags;}
     long Watchable::get_id() const {return this->id;}
     int Watchable::get_length() const {return this->length;}
+
     string Watchable::concat_tags() const {
         string concat_tags="[";
         for(int i=0;i<this->tags.size();i++){
@@ -55,8 +56,11 @@ using namespace std;
         string toReturn="";
         //toReturn.append(reinterpret_cast<const char *>(this->get_id()));
         toReturn.append(name);
-        toReturn.append(reinterpret_cast<const char *>(this->get_length()));
+        toReturn.append(" ");
+        toReturn.append(to_string(this->get_length()));
+        toReturn.append(" ");
         toReturn.append("minutes");
+        toReturn.append(" ");
         toReturn.append(this->concat_tags());
 
         return toReturn;
@@ -84,17 +88,25 @@ using namespace std;
     {
         return new Episode(*this);
     }
+
     string Episode::toString() const {
         string toReturn="";
-        string s= reinterpret_cast<const char *>(this->get_season());
-        string e = reinterpret_cast<const char *>(this->get_episode());
-        string length = reinterpret_cast<const char *>(this->get_length());
+        //string s= to_string(this->get_season());
+        //string e = to_string(this->get_episode());
+        //string length = to_string(this->get_length());
         toReturn.append(seriesName);
-        toReturn.append("S"+s+"E"+e);
-        toReturn.append(length);
+        toReturn.append(" ");
+        toReturn.append("S"+to_string(this->get_season())+"E"+to_string(this->get_episode()));
+        toReturn.append(" ");
+        toReturn.append(to_string(this->get_length()));
+        toReturn.append(" ");
         toReturn.append("minutes");
+        toReturn.append(" ");
         toReturn.append(this->concat_tags());
+
+        return toReturn;
     }
+
     Watchable* Episode::getNextWatchable(Session& s) const
     {
         Session* session = &s;

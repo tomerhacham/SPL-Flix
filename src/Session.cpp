@@ -22,14 +22,15 @@ using namespace std;
     }
 
     for(int k=0; k< inf["tv_series"].size(); k++){
-        for(int season=1; season<= inf["tv_series"][k]["season"].size(); season++){
+        for(int season=1; season<= inf["tv_series"][k]["seasons"].size(); season++){
             for(int episode = 1; episode <= inf["tv_series"][k]["seasons"][season-1]; ++episode) {
-                if (episode = inf["tv_series"][k]["seasons"][season-1]) {
-                    content.push_back(
-                            new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season,
-                                        episode, inf["tv_series"][k]["tags"], -1));
+                if (episode == inf["tv_series"][k]["seasons"][season-1]) {
+                    content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season,episode, inf["tv_series"][k]["tags"], -1));
                 }
-                else  content.push_back(new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1));
+                else  {
+                    Episode* e = new Episode(id, inf["tv_series"][k]["name"], inf["tv_series"][k]["episode_length"], season, episode, inf["tv_series"][k]["tags"],episode+1);
+                    content.push_back(e);
+                }
                 id++;
             }
         }
@@ -89,53 +90,57 @@ using namespace std;
     void Session::start() {
         exit = false;
         cout << "SPLFLIX is now on!”" << endl;
+        LengthRecommenderUser* def = new LengthRecommenderUser("default");
+        addUser(def);
+        activeUser=def;
         while (!exit) {
-            cout<<"HERE";
             string input;
-            cin >> input;
+            getline(cin,input);
+            cout<<input<<endl;
             parsing(input);
+            for(int i=0;i<parameters.size();i++){cout<<parameters[i]<<endl;}
 
             if (command == "createuser") {
                 CreateUser *cu = new CreateUser();
                 cu->act(*this);
             }
 
-            if (command == "changeuser") {
+            else if (command == "changeuser") {
                 ChangeActiveUser* cat = new ChangeActiveUser();
                 cat->act(*this);
             }
 
-            if (command == "deleteuser") {
+            else if (command == "deleteuser") {
                 DeleteUser* du = new DeleteUser();
                 du->act(*this);
             }
 
-            if (command == "dupuser") {
+            else if (command == "dupuser") {
                 DuplicateUser* dpu = new DuplicateUser();
                 dpu->act(*this);
             }
 
-            if (command == "content") {
+            else if (command == "content") {
                 PrintContentList* pcl = new PrintContentList();
                 pcl->act(*this);
             }
 
-            if (command == "watchhist") {
+            else if (command == "watchhist") {
                 PrintWatchHistory* pwh = new PrintWatchHistory();
                 pwh->act(*this);
             }
 
-            if (command == "watch") {
+            else if (command == "watch") {
                 Watch* wat = new Watch();
                 wat->act(*this);
             }
 
-            if (command == "log") {
+            else if (command == "log") {
                 PrintActionsLog* pal = new PrintActionsLog();
                 pal->act(*this);
             }
 
-            if (command == "exit") {
+            else if (command == "exit") {
                 Exit* ext = new Exit();
                 ext->act(*this);
             }
@@ -154,13 +159,19 @@ using namespace std;
         this->activeUser= user;
     }
     void Session::parsing(string s)  {
-        stringstream ss(s);
+        istringstream iss(s);
+        vector<string> param ((istream_iterator<string>(iss)),istream_iterator<string>());
+        this->parameters.clear();
+        command=param.front();
+        param.erase(param.begin()+0);
+        parameters=param;
+        /*stringstream ss(s);
         istream_iterator<string> begin(ss);
         istream_iterator<string> end;
         vector<string> parameters(begin, end);
         this->parameters= parameters;
         command= this->parameters.at(0);
-        this->parameters.erase(parameters.begin()+0);
+        this->parameters.erase(parameters.begin()+0);*/
     }
     void Session::delete_user(User * user) {
         userMap.erase(user->getName());
@@ -176,5 +187,11 @@ using namespace std;
 
     vector<Watchable *> Session::get_content() {  return this->content;
     }
+
+void Session::accept_recommendation(Watchable * recomendation) {
+        Watch* watchrec = new Watch();
+        watchrec->act(*this);
+
+}
 
 

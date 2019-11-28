@@ -70,6 +70,7 @@ public:
 class Watch : public BaseAction {
 public:
 	virtual void act(Session& sess);
+	virtual void reWatch(Session& sess, Watchable* recommendation);
 	virtual std::string toString() const;
 };
 

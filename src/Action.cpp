@@ -57,6 +57,7 @@ using namespace std;
             }
             session->addUser(new_user);
             this->complete();
+            session->change_active_user(new_user);
         }
         else{
             this->error("Invalid Algorithm");
@@ -172,7 +173,8 @@ using namespace std;
         vector<Watchable *> content = session->get_content();
         if(!content.empty()){
         for(int i=0; i<content.size();i++){
-            cout<<content.at(i)->toString();
+            string s = content.at(i)->toString();
+            cout<<to_string(i+1).append(". " )<< s<<endl;
         }
         this->complete();
     }
@@ -193,6 +195,7 @@ using namespace std;
     //Methods:
     void Watch::act(Session &sess)
     {
+        bool accept_rec=false;
         Session* session = &sess;
         stringstream stm(session->get_parameters().at(0));
         long content_id=0;
@@ -202,11 +205,16 @@ using namespace std;
             User* activeuser = session->get_active_user();
             activeuser->watch(toWatch,sess);
             this->complete();
+            cout<<"We recommend watching "<<toWatch->getNextWatchable(sess)->toString()<<", continue watching? [y/n]"<<endl;
+            string input;
+            getline(cin,input);
+            if(input=="y"){accept_rec=true;}
         }
         else{
             this->error("Content ID did not found");
         }
         session->addAction(this);
+        if(accept_rec){session->accept_recommendation()}
     }
     string Watch::toString() const {
         string toReturn="Watch";
@@ -215,6 +223,26 @@ using namespace std;
         return toReturn;
 
     }
+
+void Watch::reWatch(Session &sess, Watchable *recommendation) {
+    bool accept_rec=false;
+    Session* session = &sess;
+    Watchable* toWatch= recommendation;
+    if(toWatch!=nullptr) {
+        User* activeuser = session->get_active_user();
+        activeuser->watch(toWatch,sess);
+        this->complete();
+        cout<<"We recommend watching "<<toWatch->toString()<<", continue watching? [y/n]"<<endl;
+        string input;
+        getline(cin,input);
+        if(input=="y"){accept_rec=true;}
+    }
+    else{
+        this->error("Content ID did not found");
+    }
+    session->addAction(this);
+    if(accept_rec){}
+}
 //endregion
 
 // region PrintActionsLog
@@ -262,8 +290,9 @@ void PrintWatchHistory::act(Session &sess) {
     Session* session = &sess;
     vector<Watchable *> content = session->get_active_user()->get_history();
     if(!content.empty()){
+        cout<<"Watch history for "<<session->get_active_user()->getName()<<endl;
         for(int i=0; i<content.size();i++){
-            cout<<content.at(i)->toString();
+            cout<<content.at(i)->toString()<<endl;
             this->complete();
         }
     }
