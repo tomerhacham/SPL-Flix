@@ -1,5 +1,5 @@
-#include <include/Watchable.h>
-#include "include/User.h"
+#include <../include/Watchable.h>
+#include <../include/User.h>
 #include <cmath>        // std::abs
 #include <functional>
 #include <iostream>

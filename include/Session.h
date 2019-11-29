@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
-#include "Action.h"
+#include <../include/Action.h>
 
 class User;
 class Watchable;
@@ -12,12 +12,12 @@ class Watchable;
 class Session{
 public:
 
-    Session(const std::string &configFilePath);
+    Session(const string &configFilePath);//parameter constructor
     Session(const Session& other);//copy constructor
-    Session& Session::operator=(const Session &other);// copy Assigment operator
-    ~Session();//distructor
-    Session& Session::operator=(const Session &other){}// move assigment operator
-    Session::Session(const Session &other){}// move constructor
+    Session(Session&& other);// move constructor
+    virtual Session& operator=(const Session& other);// copy Assigment operator
+    virtual Session& operator=(Session&& other);// move assigment operator
+    ~Session();//destructor
 
     public: vector<string> get_parameters();
     public: vector<Watchable*> get_content();

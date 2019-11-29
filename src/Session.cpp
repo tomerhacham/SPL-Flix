@@ -3,12 +3,13 @@
 #include <../include/User.h>
 #include <fstream>
 #include <iostream>
-#include <Watchable.h>
+#include <../include/Watchable.h>
 #include <sstream>
 
 using namespace std;
 //Constructors
-    Session::Session(const string &configFilePath) {
+    Session::Session(const string &configFilePath)//parameter constructor
+    {
     using json= nlohmann::json;
     ifstream i(configFilePath);
     json inf;
@@ -19,38 +20,39 @@ using namespace std;
     int length;
     string name;
 
-   for(int i=0; inf["movies"].size(); i++){
+   for(int i=0; i< inf["movies"].size(); i++){
         length = inf["movies"][i]["length"];
         name= inf["movies"][i]["name"];
         this->content.push_back(new Movie(id, name, length , inf["movies"][i]["tags"]));
         id++;
+
     }
 
-    for(int k=0; k< inf["tv_series"].size(); k++){
-        for(long season=1; season<= inf["tv_series"][k]["seasons"].size(); season++){
-            for(long episode = 1; episode <= inf["tv_series"][k]["seasons"][season-1]; ++episode) {
-                length= (inf["tv_series"][k]["episode_length"]);
-                name= inf["tv_series"][k]["name"];
-                if (episode = inf["tv_series"][k]["seasons"][season-1]) {
-                    content.push_back(
-                            new Episode(id, name, length , season,episode, inf["tv_series"][k]["tags"], -1));
-                }
-                else  content.push_back(new Episode(id, name , length , season, episode, inf["tv_series"][k]["tags"],episode+1));
-                id++;
-            }
+        for(int k=0; k< inf["tv_series"].size(); k++){
+            for(int m=1; m<= inf["tv_series"][k]["seasons"].size(); m++){
+                for(int n = 1; n <= inf["tv_series"][k]["seasons"][m-1]; ++n) {
+                     length= (inf["tv_series"][k]["episode_length"]);
+                     name= inf["tv_series"][k]["name"];
+                     if (n == inf["tv_series"][k]["seasons"][m-1]) {
+                        content.push_back(new Episode(id, name, length , m ,n, inf["tv_series"][k]["tags"], -1));
+                     }
+                    else  content.push_back(new Episode(id, name , length , m, n, inf["tv_series"][k]["tags"],n+1));
+                        id++;
+                 }
+              }
         }
-    }
     for(int f = 0; f < content.size(); ++f)
         std::cout << content[f]->toString() << '\n';
 }
-    Session::Session(const Session &other) {
+    Session::Session(const Session &other):command(other.command), exit(other.exit)//copy constructor
+    {
         for (int i=0; i<other.content.size(); i++){
             Watchable* watch= other.content.at(i);
             this->content.push_back(watch->clone());
         }
         for(int j=0; j< other.actionsLog.size(); j++){
             BaseAction* bsa= other.actionsLog.at(j);
-            this->actionsLog.push_back(bsa);
+            this->actionsLog.push_back(bsa->clone());
         }
         for(auto pair : other.userMap)
         {
@@ -61,10 +63,62 @@ using namespace std;
         for (int k = 0; k <other.parameters.size() ; ++k) {
             this->parameters.push_back(other.parameters.at(k));
         }
+    }
+    Session::Session(Session&& other)// move constructor
+    {
+        this->clear();
+        this->content= other.content;
+        this->actionsLog= other.actionsLog;
+        this->userMap= other.userMap;
+        this->activeUser= other.activeUser;
+        this->parameters= other.parameters;
         this->command= other.command;
         this->exit= other.exit;
-    }//copy constructor
-    Session::~Session() {
+        other.clear();
+    }
+    Session& Session::operator=(const Session& other)// copy Assigment operator
+     {
+        if(this!= &other)
+        {
+            this->clear();
+            for (int i = 0; i < other.content.size(); i++) {
+                Watchable *watch = other.content.at(i);
+                this->content.push_back(watch->clone());
+            }
+            for (int j = 0; j < other.actionsLog.size(); j++) {
+                BaseAction *bsa = other.actionsLog.at(j);
+                this->actionsLog.push_back(bsa->clone());
+            }
+            for(auto pair : other.userMap)
+            {
+                this->userMap.insert(userMap.begin(),pair);
+            }
+            this->activeUser = other.activeUser->clone();
+            for (int k = 0; k < other.parameters.size(); ++k) {
+                this->parameters.push_back(other.parameters.at(k));
+            }
+            this->command = other.command;
+            this->exit = other.exit;
+        }
+        return *this;
+    }
+    Session & Session:: operator=(Session && other)//Move assngment operator
+     {
+        if(this!= &other){
+            this->clear();
+            this->content= other.content;
+            this->actionsLog= other.actionsLog;
+            this->userMap= other.userMap;
+            this->activeUser= other.activeUser;
+            this->parameters= other.parameters;
+            this->command= other.command;
+            this->exit= other.exit;
+            other.clear();
+        }
+        return *this;
+     }
+    Session::~Session() //Destructor
+    {
         delete this->activeUser;
         for(auto elem: this->userMap){
             User* user= elem.second;
@@ -83,65 +137,8 @@ using namespace std;
         }
         this->actionsLog.clear();
         this->parameters.clear();
-    } //distructor
-    Session& Session::operator=(const Session &other){
-        if(this= &other){
-            return *this;
-        }
-        this.clear();
-        for (int i=0; i<other.content.size(); i++){
-            Watchable* watch= other.content.at(i);
-            this.content.push_back(watch);
-        }
-        for(int j=0; j< other.actionsLog.size(); j++){
-            BaseAction* bsa= other.actionsLog.at(i);
-            this.actionsLog.push_back(bsa);
-        }
-        iterator it = other.userMap.begin();
-        while (it != userMap.end()){
-            string name= (string)it.first();
-            User* user= it.second();
-            this.userMap.insert(name,user);
-            it++
-        }
-        this.activeUser= other.activeUser;
-        for (int k = 0; k <other.parameters.size() ; ++k) {
-            this.parameters.push_back(other.parameters.at(i));
-        }
-        this.command= other.command;
-        this.exit= other.exit;
-
-        return *this;
-    }// copy Assigment operator
-    Session& Session::operator=(const Session &other){
-        if(this!= other){
-            this.clear():
-            this.content= other.content;
-            this.actionsLog= other.actionsLog;
-            this.userMap= other.userMap;
-            this.activeUser= other.activeUser;
-            this.parameters= other.parameters;
-            this.command= other.command;
-            this.exit= other.exit;
-            other.clear();
-            return *this;
-        }
-        return *this;
-    }// move assigment operator
-    Session::Session(const Session &other){
-        this.clear():
-        this.content= other.content;
-        this.actionsLog= other.actionsLog;
-        this.userMap= other.userMap;
-        this.activeUser= other.activeUser;
-        this.parameters= other.parameters;
-        this.command= other.command;
-        this.exit= other.exit;
-        other.clear();
-    }// move constructor
+    }
 //Methods:
-
-
     Watchable * Session::find_content_by_id(long id) {
         for(int i=0; i<content.size(); i++){
          Watchable* w = content.at(i);
@@ -249,17 +246,19 @@ using namespace std;
         this->exit=true;
     }
     void Session::clear(){
-        for (int i=0; i<this.content.size(); i++){
-            this.content.at(i).clear();
+        for(auto watchable:content){
+            delete watchable;
         }
-        for (int j = 0; j <this.actionsLog.size(); ++j) {
-            this.actionsLog.at(j).clear;
+        for(auto action:actionsLog){
+            delete action;
         }
-        this.userMap.clear();
-        this.activeUser.clear();
-        this.parameters.clear();
-        this.command.clear();
-        this.exit.clear();
+        for(auto elem: this->userMap){
+            User* user= elem.second;
+            delete user;
+        }
+        this->userMap.clear();
+        this->activeUser=nullptr;
+        this->parameters.clear();
     }
 
     vector<string> Session::get_parameters() {
@@ -277,3 +276,14 @@ void Session::accept_recommendation(long recomended_id) {
 }
 
 
+//for(int k=0; k< inf["tv_series"].size(); k++){
+//for(int m=1; m<= inf["tv_series"][k]["seasons"].size(); m++){
+//for(int n = 1; n <= inf["tv_series"][k]["seasons"][m]; ++n) {
+//length= (inf["tv_series"][k]["episode_length"]);
+//name= inf["tv_series"][k]["name"];
+//if (n == inf["tv_series"][k]["seasons"][m]) {
+//content.push_back(
+//new Episode(id, name, length , m ,n, inf["tv_series"][k]["tags"], -1));
+//}
+//else  content.push_back(new Episode(id, name , length , m, n, inf["tv_series"][k]["tags"],n+1));
+//id++;

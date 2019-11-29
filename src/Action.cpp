@@ -1,10 +1,10 @@
 #include <iostream>
 #include <vector>
-#include <include/User.h>
+#include <../include/User.h>
 #include <sstream>
-#include <include/Session.h>
-#include "include/Action.h"
-#include "include/Watchable.h"
+#include <../include/Session.h>
+#include <../include/Action.h>
+#include <../include/Watchable.h>
 using namespace std;
 
 //region BaseAction - abstract
